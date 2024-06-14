@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+
+    <data>
+        <variable
+            name="viewmodel"
+            type="com.example.anivault.ui.auth.AuthViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        tools:context=".ui.auth.Login">
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="143dp"
+            android:layout_height="143dp"
+            android:layout_marginTop="110dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/logo" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:fontFamily="@font/japanbento"
+            android:letterSpacing=".32"
+            android:lineSpacingExtra="10dp"
+            android:text="@string/login_welcome"
+            android:textAlignment="textStart"
+            android:textSize="32sp"
+            app:layout_constraintEnd_toEndOf="@+id/imageView3"
+            app:layout_constraintStart_toStartOf="@+id/imageView3"
+            app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+
+        <EditText
+            android:text="@={viewmodel.email}"
+            android:id="@+id/login_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="40dp"
+            android:background="@drawable/authentication_field"
+            android:ems="10"
+            android:fontFamily="@font/japanbento"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:paddingLeft="18dp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toTopOf="@+id/login_password"
+            app:layout_constraintEnd_toEndOf="@+id/login_password"
+            app:layout_constraintStart_toStartOf="@+id/login_password" />
+
+        <EditText
+            android:text="@={viewmodel.password}"
+            android:id="@+id/login_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="69dp"
+            android:background="@drawable/authentication_field"
+            android:ems="10"
+            android:fontFamily="@font/japanbento"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:paddingLeft="18dp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toTopOf="@+id/login_btn"
+            app:layout_constraintEnd_toEndOf="@+id/login_btn"
+            app:layout_constraintStart_toStartOf="@+id/login_btn" />
+
+        <Button
+            android:onClick="@{viewmodel::onLoginButtonClick}"
+            android:id="@+id/login_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginBottom="90dp"
+            android:backgroundTint="@color/white"
+            android:fontFamily="@font/japanbento"
+            android:letterSpacing=".16"
+            android:text="LOGIN"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:cornerRadius="17dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:strokeColor="@color/violet" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

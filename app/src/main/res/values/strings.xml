@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">AniVault</string>
+    <string name="get_started_about"><font color="#CCFFFFFF">Begin your anime journey with AnimeVault, your ultimate tracking companion!</font></string>
+    <string name="get_started_welcome"><font color="#FFFFFF">Welcome to </font> <font color="#CA38ED">AniVault</font></string>
+    <string name="login_welcome"><font color="#FFFFFF">Welcome Back </font> <font color="#CA38ED">Senpai !!</font></string>
+    <string name="signup_text"><font color="#FFFFFF">Become a</font> <font color="#CA38ED">Senpai </font><font color="#FFFFFF">Today!</font></string>
+</resources>
