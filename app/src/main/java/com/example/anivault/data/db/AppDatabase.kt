@@ -30,7 +30,7 @@ abstract class AppDatabase : RoomDatabase() {
             Room.databaseBuilder(
                 context.applicationContext,
                 AppDatabase::class.java,
-                "MyDatabase.db"
+                "AniVaultUser.db"
             ).build()
     }
 }

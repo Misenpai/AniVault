@@ -11,9 +11,9 @@ data class User(
     var name: String? = null,
     var email: String? = null,
     var password: String? = null,
-    var email_verified_at: String? = null,
-    var created_at: String? = null,
-    var updated_at: String? = null
+    var avatar: String? = null,
+    var role_id: String? = null,
+    var token:String? = null,
 ){
     @PrimaryKey(autoGenerate = false)
     var uid: Int = CURRENT_USER_ID

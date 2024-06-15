@@ -83,7 +83,6 @@
             app:layout_constraintStart_toStartOf="@+id/login_btn" />
 
         <Button
-            android:onClick="@{viewmodel::onLoginButtonClick}"
             android:id="@+id/login_btn"
             android:layout_width="wrap_content"
             android:layout_height="60dp"
@@ -91,6 +90,7 @@
             android:backgroundTint="@color/white"
             android:fontFamily="@font/japanbento"
             android:letterSpacing=".16"
+            android:onClick="@{viewmodel::onLoginButtonClick}"
             android:text="LOGIN"
             android:textColor="@color/black"
             android:textSize="20sp"
@@ -98,7 +98,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:strokeColor="@color/violet" />
+            app:strokeColor="@color/violet"
+            app:strokeWidth="1.5dp" />
 
         <ProgressBar
             android:id="@+id/progress_bar"
