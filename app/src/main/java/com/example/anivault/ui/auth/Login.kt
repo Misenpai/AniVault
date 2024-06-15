@@ -7,7 +7,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProviders
 import com.example.anivault.R
 import com.example.anivault.data.db.Entities.User
-import com.example.anivault.data.network.response.UserPayload
 import com.example.anivault.databinding.ActivityLoginBinding
 import com.example.anivault.utils.hide
 import com.example.anivault.utils.show
@@ -31,7 +30,7 @@ class Login : AppCompatActivity(),AuthListener {
         toast("Login Started")
     }
 
-    override fun onSuccess(user:UserPayload) {
+    override fun onSuccess(user:User) {
         progressBar.hide()
         toast("${user.name} is Logged in")
     }

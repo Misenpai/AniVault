@@ -6,6 +6,6 @@ import com.example.anivault.data.network.response.UserPayload
 
 interface AuthListener {
     fun onStarted()
-    fun onSuccess(user:UserPayload)
+    fun onSuccess(user:User)
     fun onFailure(message:String)
 }
