@@ -3,6 +3,7 @@ package com.example.anivault.ui.auth
 import android.view.View
 import androidx.lifecycle.ViewModel
 import com.example.anivault.data.repository.UserRepository
+import com.example.anivault.utils.ApiException
 import com.example.anivault.utils.Coroutines
 
 class AuthViewModel:ViewModel() {
@@ -17,11 +18,15 @@ class AuthViewModel:ViewModel() {
             return
         }
         Coroutines.main {
-            val response = UserRepository().userLogin(email!!, password!!)
-            if(response.isSuccessful){
-                authListener?.onSuccess(response.body()?.result!!.payload!!)
-            }else{
-                authListener?.onFailure("Error Code: ${response.code()}")
+            try {
+                val authResponse = UserRepository().userLogin(email!!, password!!)
+                authResponse.result?.payload?.let {
+                    authListener?.onSuccess(it)
+                    return@main
+                }
+                authListener?.onFailure("Failed to login")
+            }catch(e: ApiException){
+                authListener?.onFailure(e.message!!)
             }
         }
     }
