@@ -3,8 +3,11 @@ package com.example.anivault.data.network
 import android.content.Context
 import android.net.ConnectivityManager
 import com.example.anivault.utils.NoInternetException
+import com.example.anivault.utils.TimeoutException
 import okhttp3.Interceptor
 import okhttp3.Response
+import java.io.IOException
+import java.net.SocketTimeoutException
 
 class NetworkConnectionInterceptor(
     context: Context
@@ -15,7 +18,13 @@ class NetworkConnectionInterceptor(
     override fun intercept(chain: Interceptor.Chain): Response {
         if(!isInternetAvailable())
             throw NoInternetException("Make sure you have an active data connection")
-        return chain.proceed(chain.request())
+        return try {
+            chain.proceed(chain.request())
+        } catch (e: SocketTimeoutException) {
+            throw TimeoutException("Connection timeout. Please try again.")
+        } catch (e: IOException) {
+            throw NoInternetException("Network error. Please check your connection.")
+        }
     }
 
     private fun isInternetAvailable() : Boolean{
