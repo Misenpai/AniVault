@@ -1,71 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/black"
-    tools:context=".ui.auth.Authentication_Login_Signup">
+    >
 
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="180dp"
-        android:layout_height="180dp"
-        android:layout_marginTop="120dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/logo" />
+    <data>
+        <variable
+            name="viewmodel"
+            type="com.example.anivault.ui.auth.AuthVIewModelAuthentication" />
+    </data>
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="35dp"
-        android:fontFamily="@font/japanbento"
-        android:letterSpacing=".16"
-        android:text="AniVault"
-        android:textColor="@color/white"
-        android:textSize="55sp"
-        app:layout_constraintEnd_toEndOf="@+id/imageView2"
-        app:layout_constraintStart_toStartOf="@+id/imageView2"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
-    <Button
-        android:id="@+id/authentication_login"
-        android:layout_width="wrap_content"
-        android:layout_height="60dp"
-        android:layout_marginBottom="45dp"
-        android:backgroundTint="@color/white"
-        android:fontFamily="@font/japanbento"
-        android:letterSpacing=".16"
-        android:text="LOGIN"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        app:cornerRadius="17dp"
-        app:layout_constraintBottom_toTopOf="@+id/authentication_signup"
-        app:layout_constraintEnd_toEndOf="@+id/authentication_signup"
-        app:layout_constraintStart_toStartOf="@+id/authentication_signup"
-        app:strokeColor="@color/violet"
-        app:strokeWidth="1.5dp" />
+    <androidx.constraintlayout.widget.ConstraintLayout
 
-    <Button
-        android:id="@+id/authentication_signup"
-        android:layout_width="wrap_content"
-        android:layout_height="60dp"
-        android:layout_marginBottom="90dp"
-        android:backgroundTint="@color/white"
-        android:fontFamily="@font/japanbento"
-        android:letterSpacing=".16"
-        android:text="SIGNUP"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        app:cornerRadius="17dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:strokeColor="@color/violet"
-        app:strokeWidth="1.5dp" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        tools:context=".ui.auth.AuthenticationLoginSignup">
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="180dp"
+            android:layout_height="180dp"
+            android:layout_marginTop="120dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/logo" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="35dp"
+            android:fontFamily="@font/japanbento"
+            android:letterSpacing=".16"
+            android:text="AniVault"
+            android:textColor="@color/white"
+            android:textSize="55sp"
+            app:layout_constraintEnd_toEndOf="@+id/imageView2"
+            app:layout_constraintStart_toStartOf="@+id/imageView2"
+            app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+
+        <Button
+            android:onClick="@{viewmodel::onLoginButtonClick}"
+            android:id="@+id/authentication_login"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginBottom="45dp"
+            android:backgroundTint="@color/white"
+            android:fontFamily="@font/japanbento"
+            android:letterSpacing=".16"
+            android:text="LOGIN"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:cornerRadius="17dp"
+            app:layout_constraintBottom_toTopOf="@+id/authentication_signup"
+            app:layout_constraintEnd_toEndOf="@+id/authentication_signup"
+            app:layout_constraintStart_toStartOf="@+id/authentication_signup"
+            app:strokeColor="@color/violet"
+            app:strokeWidth="1.5dp" />
+
+        <Button
+            android:onClick="@{viewmodel::onSignupButtonClick}"
+            android:id="@+id/authentication_signup"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginBottom="90dp"
+            android:backgroundTint="@color/white"
+            android:fontFamily="@font/japanbento"
+            android:letterSpacing=".16"
+            android:text="SIGNUP"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:cornerRadius="17dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:strokeColor="@color/violet"
+            app:strokeWidth="1.5dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

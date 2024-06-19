@@ -3,18 +3,19 @@ package com.example.anivault
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProviders
+import com.example.anivault.databinding.ActivityGetstartedBinding
+import com.example.anivault.ui.auth.AuthViewModelGetStarted
 
 class GETSTARTED : AppCompatActivity() {
+    private lateinit var binding:ActivityGetstartedBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_getstarted)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        binding = DataBindingUtil.setContentView(this,R.layout.activity_getstarted)
+        val viewModel = ViewModelProviders.of(this).get(AuthViewModelGetStarted::class.java)
+        binding.viewmodel = viewModel
     }
+
 }
