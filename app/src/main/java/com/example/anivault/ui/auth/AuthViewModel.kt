@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.example.anivault.data.repository.UserRepository
 import com.example.anivault.utils.ApiException
 import com.example.anivault.utils.Coroutines
+import com.example.anivault.utils.NoInternetException
 
 class AuthViewModel(
     private val repository: UserRepository
@@ -32,6 +33,8 @@ class AuthViewModel(
                 }
                 authListener?.onFailure("Failed to login")
             }catch(e: ApiException){
+                authListener?.onFailure(e.message!!)
+            }catch(e: NoInternetException){
                 authListener?.onFailure(e.message!!)
             }
         }

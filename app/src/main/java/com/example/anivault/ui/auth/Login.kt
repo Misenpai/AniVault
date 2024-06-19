@@ -7,13 +7,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.example.anivault.ui.home.MainActivity
 import com.example.anivault.R
 import com.example.anivault.data.db.AppDatabase
 import com.example.anivault.data.db.Entities.User
 import com.example.anivault.data.network.MyApi
+import com.example.anivault.data.network.NetworkConnectionInterceptor
 import com.example.anivault.data.repository.UserRepository
 import com.example.anivault.databinding.ActivityLoginBinding
+import com.example.anivault.ui.home.MainActivity
 import com.example.anivault.utils.hide
 import com.example.anivault.utils.show
 import com.example.anivault.utils.toast
@@ -25,7 +26,8 @@ class Login : AppCompatActivity(),AuthListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val api = MyApi()
+        val networkConnectionInterceptor = NetworkConnectionInterceptor(this)
+        val api = MyApi(networkConnectionInterceptor)
         val db = AppDatabase(this)
         val repository = UserRepository(api, db)
         val factory = AuthViewModelFactory(repository)
