@@ -6,31 +6,28 @@ import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider.NewInstanceFactory.Companion.instance
 import androidx.lifecycle.ViewModelProviders
 import com.example.anivault.R
-import com.example.anivault.data.db.AppDatabase
 import com.example.anivault.data.db.Entities.User
-import com.example.anivault.data.network.MyApi
-import com.example.anivault.data.network.NetworkConnectionInterceptor
-import com.example.anivault.data.repository.UserRepository
 import com.example.anivault.databinding.ActivityLoginBinding
 import com.example.anivault.ui.home.MainActivity
 import com.example.anivault.utils.hide
 import com.example.anivault.utils.show
 import com.example.anivault.utils.toast
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.kodein
+import org.kodein.di.generic.instance
 
-class Login : AppCompatActivity(),AuthListener {
+class Login : AppCompatActivity(),AuthListener,KodeinAware {
 
     private lateinit var binding: ActivityLoginBinding
     private lateinit var progressBar: ProgressBar
+    override val kodein by kodein()
+    private val factory : AuthViewModelFactory by instance()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val networkConnectionInterceptor = NetworkConnectionInterceptor(this)
-        val api = MyApi(networkConnectionInterceptor)
-        val db = AppDatabase(this)
-        val repository = UserRepository(api, db)
-        val factory = AuthViewModelFactory(repository)
 
         binding = DataBindingUtil.setContentView(this,R.layout.activity_login)
         val viewModel = ViewModelProviders.of(this,factory).get(AuthViewModel::class.java)
