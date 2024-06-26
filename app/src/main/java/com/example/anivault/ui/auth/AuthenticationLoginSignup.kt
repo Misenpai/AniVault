@@ -16,6 +16,5 @@ class AuthenticationLoginSignup : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this,R.layout.activity_authentication_login_signup)
         val viewModel = ViewModelProviders.of(this).get(AuthVIewModelAuthentication::class.java)
         binding.viewmodel = viewModel
-
         }
 }
