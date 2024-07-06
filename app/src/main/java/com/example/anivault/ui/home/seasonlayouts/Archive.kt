@@ -15,7 +15,7 @@ import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
 
-class archive : Fragment(), KodeinAware {
+class Archive : Fragment(), KodeinAware {
 
     override val kodein by kodein()
 
@@ -34,7 +34,7 @@ class archive : Fragment(), KodeinAware {
 
         val recyclerView: RecyclerView = view.findViewById(R.id.recycleViewArchive)
         adapter = ArchiveAdapter { year, season ->
-            viewModel.onSeasonButtonClicked(year, season)
+            viewModel.onSeasonButtonClicked(parentFragmentManager, R.id.frame_archive, year, season)
         }
 
         recyclerView.layoutManager = LinearLayoutManager(context)

@@ -17,7 +17,7 @@ import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
 
-class thisSeason : Fragment(), KodeinAware {
+class ThisSeason : Fragment(), KodeinAware {
     override val kodein by kodein()
 
     private lateinit var animeAdapter: AnimeAdapter

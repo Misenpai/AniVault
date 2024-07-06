@@ -24,6 +24,13 @@ interface JikanApiService {
         @Query("page") page: Int
     ): AnimeResponse
 
+    @GET("seasons/{year}/{season}")
+    suspend fun getAnimeArchive(
+        @Path("year") year: String,
+        @Path("season") season: String,
+        @Query("page") page: Int
+    ): AnimeResponse
+
     @GET("seasons")
     suspend fun getSeasons(): SeasonResponse
 

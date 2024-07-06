@@ -12,36 +12,36 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.anivault.R
 import com.example.anivault.ui.adapters.AnimeAdapter
-import com.example.anivault.ui.viewmodel.AnimeViewModelNextAnime
+import com.example.anivault.ui.viewmodel.AnimeViewModelPreviousSeason
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
 
-class next : Fragment(),KodeinAware {
+class Last : Fragment(),KodeinAware {
     override val kodein by kodein()
 
     private lateinit var animeAdapter: AnimeAdapter
-    private lateinit var viewModel: AnimeViewModelNextAnime
+    private lateinit var viewModel: AnimeViewModelPreviousSeason
     private val viewModelFactory: AnimeViewModelFactory by instance()
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_next, container, false)
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_last, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val recyclerView: RecyclerView = view.findViewById(R.id.recycleViewNextSeason)
+        val recyclerView: RecyclerView = view.findViewById(R.id.recycleViewLastSeason)
         recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
 
         animeAdapter = AnimeAdapter()
         recyclerView.adapter = animeAdapter
 
-        viewModel = ViewModelProvider(this, viewModelFactory).get(AnimeViewModelNextAnime::class.java)
-        viewModel.animeListNextSeason.observe(viewLifecycleOwner) { animeList ->
+        viewModel = ViewModelProvider(this, viewModelFactory).get(AnimeViewModelPreviousSeason::class.java)
+        viewModel.animeListPreviousSeason.observe(viewLifecycleOwner) { animeList ->
             animeAdapter.submitList(animeList)
         }
         viewModel.errorMessage.observe(viewLifecycleOwner, Observer { errorMessage ->
@@ -50,5 +50,4 @@ class next : Fragment(),KodeinAware {
             }
         })
     }
-
 }

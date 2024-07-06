@@ -12,36 +12,36 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.anivault.R
 import com.example.anivault.ui.adapters.AnimeAdapter
-import com.example.anivault.ui.viewmodel.AnimeViewModelPreviousSeason
+import com.example.anivault.ui.viewmodel.AnimeArchiveThatSeason
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
 
-class last : Fragment(),KodeinAware {
+class ArchiveSelected : Fragment(), KodeinAware {
     override val kodein by kodein()
 
     private lateinit var animeAdapter: AnimeAdapter
-    private lateinit var viewModel: AnimeViewModelPreviousSeason
+    private lateinit var viewModel: AnimeArchiveThatSeason
     private val viewModelFactory: AnimeViewModelFactory by instance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_last, container, false)
+        return inflater.inflate(R.layout.fragment_archive_selected, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val recyclerView: RecyclerView = view.findViewById(R.id.recycleViewLastSeason)
+        val recyclerView: RecyclerView = view.findViewById(R.id.recycleViewArchiveAnime)
         recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
 
         animeAdapter = AnimeAdapter()
         recyclerView.adapter = animeAdapter
 
-        viewModel = ViewModelProvider(this, viewModelFactory).get(AnimeViewModelPreviousSeason::class.java)
-        viewModel.animeListPreviousSeason.observe(viewLifecycleOwner) { animeList ->
+        viewModel = ViewModelProvider(this, viewModelFactory).get(AnimeArchiveThatSeason::class.java)
+
+        viewModel.animeArchiveThatSeason.observe(viewLifecycleOwner) { animeList ->
             animeAdapter.submitList(animeList)
         }
         viewModel.errorMessage.observe(viewLifecycleOwner, Observer { errorMessage ->

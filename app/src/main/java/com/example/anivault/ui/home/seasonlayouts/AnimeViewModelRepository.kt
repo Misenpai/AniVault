@@ -3,6 +3,7 @@ package com.example.anivault.ui.home.seasonlayouts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.anivault.data.repository.AnimeRepository
+import com.example.anivault.ui.viewmodel.AnimeArchiveThatSeason
 import com.example.anivault.ui.viewmodel.AnimeViewModel
 import com.example.anivault.ui.viewmodel.AnimeViewModelNextAnime
 import com.example.anivault.ui.viewmodel.AnimeViewModelPreviousSeason
@@ -27,8 +28,11 @@ class AnimeViewModelFactory(private val repository: AnimeRepository) : ViewModel
             @Suppress("UNCHECKED_CAST")
             return ArchiveViewModel(repository) as T
         }
+        else if (modelClass.isAssignableFrom(AnimeArchiveThatSeason::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return AnimeArchiveThatSeason(repository) as T
+        }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
-
 
 }

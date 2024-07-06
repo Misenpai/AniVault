@@ -1,11 +1,16 @@
 package com.example.anivault.ui.viewmodel
 
+import android.os.Bundle
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.commit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.anivault.data.`object`.SharedViewModel
 import com.example.anivault.data.repository.AnimeRepository
 import com.example.anivault.ui.dataclassess.ArchiveYearItems
+import com.example.anivault.ui.home.seasonlayouts.ArchiveSelected
 import kotlinx.coroutines.launch
 
 class ArchiveViewModel(private val repository: AnimeRepository) : ViewModel() {
@@ -29,7 +34,17 @@ class ArchiveViewModel(private val repository: AnimeRepository) : ViewModel() {
         }
     }
 
-    fun onSeasonButtonClicked(year: Int, season: String) {
-        // Handle the button click, e.g., navigate to season details
+    fun onSeasonButtonClicked(fragmentManager: FragmentManager, containerId: Int, year: Int, season: String) {
+        SharedViewModel.setSelectedSeason(year, season)
+        val fragment = ArchiveSelected().apply {
+            arguments = Bundle().apply {
+                putInt("year", year)
+                putString("season", season)
+            }
+        }
+        fragmentManager.commit {
+            replace(containerId, fragment)
+            addToBackStack(null)  // Optional: add to back stack to allow back navigation
+        }
     }
 }

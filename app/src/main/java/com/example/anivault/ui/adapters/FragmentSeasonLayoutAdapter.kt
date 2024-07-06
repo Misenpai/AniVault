@@ -4,10 +4,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.example.anivault.ui.home.seasonlayouts.archive
-import com.example.anivault.ui.home.seasonlayouts.last
-import com.example.anivault.ui.home.seasonlayouts.next
-import com.example.anivault.ui.home.seasonlayouts.thisSeason
+import com.example.anivault.ui.home.seasonlayouts.Archive
+import com.example.anivault.ui.home.seasonlayouts.Last
+import com.example.anivault.ui.home.seasonlayouts.Next
+import com.example.anivault.ui.home.seasonlayouts.ThisSeason
 
 class FragmentSeasonLayoutAdapter(
     fragmentManager : FragmentManager,
@@ -19,10 +19,10 @@ class FragmentSeasonLayoutAdapter(
 
     override fun createFragment(position: Int): Fragment {
         return when (position) {
-            0 -> last()
-            1 -> thisSeason()
-            2 -> next()
-            else -> archive()
+            0 -> Last()
+            1 -> ThisSeason()
+            2 -> Next()
+            else -> Archive()
         }
     }
 }
