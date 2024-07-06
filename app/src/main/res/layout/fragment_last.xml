@@ -33,7 +33,7 @@
                 android:fontFamily="@font/poppins_bold"
                 android:gravity="center_horizontal"
                 android:paddingLeft="60dp"
-                android:text="Text Visible Here"
+                android:text="Last Season"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="20sp" />
@@ -48,7 +48,7 @@
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycleView"
+            android:id="@+id/recycleViewLastSeason"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="20dp"

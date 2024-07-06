@@ -1,7 +1,7 @@
 package com.example.anivault
 
 import com.example.anivault.data.network.JikanApiService
-import com.example.anivault.ui.home.seasonlayouts.AnimeRepository
+import com.example.anivault.data.repository.AnimeRepository
 import com.example.anivault.ui.home.seasonlayouts.AnimeViewModelFactory
 import org.kodein.di.Kodein
 import org.kodein.di.generic.bind
@@ -19,7 +19,6 @@ val appModule = Kodein.Module("appModule") {
             .build()
             .create(JikanApiService::class.java)
     }
-
     bind<AnimeRepository>() with singleton { AnimeRepository(instance()) }
     bind<AnimeViewModelFactory>() with provider { AnimeViewModelFactory(instance()) }
 }
