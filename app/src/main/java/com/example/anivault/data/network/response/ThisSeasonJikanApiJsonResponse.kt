@@ -1,4 +1,4 @@
-package com.example.anivault.data.network
+package com.example.anivault.data.network.response
 
 data class AnimeResponse(
     val pagination: Pagination,
