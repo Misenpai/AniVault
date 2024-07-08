@@ -5,6 +5,7 @@
     import com.example.anivault.data.network.response.AnimeResponse
     import com.example.anivault.data.network.response.YearData
     import com.example.anivault.ui.dataclassess.Anime
+    import com.example.anivault.ui.dataclassess.HorizontalAnime
     import kotlinx.coroutines.delay
     import kotlinx.coroutines.flow.Flow
     import kotlinx.coroutines.flow.flow
@@ -99,4 +100,24 @@
 
             return Pair(season, year)
         }
+
+        fun getAnimeListHorizontal(apiCall: suspend (Int) -> AnimeResponse): Flow<List<HorizontalAnime>> = flow {
+            try {
+                val response = apiCall(1)
+                val animeList = response.data.map { animeData ->
+                    HorizontalAnime(
+                        title = animeData.title,
+                        imageUrl = animeData.images.jpg.image_url
+                    )
+                }
+                emit(animeList)
+            } catch (e: Exception) {
+                throw e
+            }
+        }
+
+        fun getTopAnimeHorizontal(): Flow<List<HorizontalAnime>> = getAnimeListHorizontal { page ->
+            apiService.getTopAnime(page)
+        }
+
     }

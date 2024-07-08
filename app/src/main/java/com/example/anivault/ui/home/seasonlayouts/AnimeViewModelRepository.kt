@@ -8,6 +8,7 @@ import com.example.anivault.ui.viewmodel.AnimeViewModel
 import com.example.anivault.ui.viewmodel.AnimeViewModelNextAnime
 import com.example.anivault.ui.viewmodel.AnimeViewModelPreviousSeason
 import com.example.anivault.ui.viewmodel.ArchiveViewModel
+import com.example.anivault.ui.viewmodel.SearchAnimeHorizontalViewHolder
 
 class AnimeViewModelFactory(private val repository: AnimeRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -31,6 +32,10 @@ class AnimeViewModelFactory(private val repository: AnimeRepository) : ViewModel
         else if (modelClass.isAssignableFrom(AnimeArchiveThatSeason::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return AnimeArchiveThatSeason(repository) as T
+        }
+        else if (modelClass.isAssignableFrom(SearchAnimeHorizontalViewHolder::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return SearchAnimeHorizontalViewHolder(repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

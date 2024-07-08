@@ -5,7 +5,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.anivault.R
-import com.example.anivault.ui.home.mainactivitylayout.animeSearch
+import com.example.anivault.ui.home.mainactivitylayout.AnimeSearch
 import com.example.anivault.ui.home.mainactivitylayout.animeseason
 import com.example.anivault.ui.home.mainactivitylayout.chat
 import com.example.anivault.ui.home.mainactivitylayout.library
@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.search->{
-                    loadFragment(animeSearch())
+                    loadFragment(AnimeSearch())
                     true
                 }
                 R.id.chat->{

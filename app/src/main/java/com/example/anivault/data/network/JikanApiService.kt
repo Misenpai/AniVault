@@ -34,5 +34,8 @@ interface JikanApiService {
     @GET("seasons")
     suspend fun getSeasons(): SeasonResponse
 
+    @GET("top/anime")
+    suspend fun getTopAnime(@Query("page") page: Int): AnimeResponse
+
 
 }
