@@ -19,7 +19,6 @@ class AnimeViewModelNextAnime(private val repository: AnimeRepository) : ViewMod
     private val allAnimeNextSeason = mutableListOf<Anime>()
 
     init {
-
         fetchNextSeasonAnime()
     }
 

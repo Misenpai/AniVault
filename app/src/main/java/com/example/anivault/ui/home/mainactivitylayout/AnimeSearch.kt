@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.anivault.R
 import com.example.anivault.ui.adapters.HorizontalAnimeAdapter
+import com.example.anivault.ui.adapters.HorizontalAnimeRecommendedAdapter
 import com.example.anivault.ui.home.seasonlayouts.AnimeViewModelFactory
 import com.example.anivault.ui.viewmodel.SearchAnimeHorizontalViewHolder
 import org.kodein.di.KodeinAware
@@ -19,7 +20,10 @@ import org.kodein.di.generic.instance
 class AnimeSearch : Fragment(),KodeinAware {
     override val kodein by kodein()
 
-    private lateinit var animeAdapter: HorizontalAnimeAdapter
+    private lateinit var topAnimeAdapter: HorizontalAnimeAdapter
+    private lateinit var recommendedAnimeAdapter: HorizontalAnimeRecommendedAdapter
+    private lateinit var topUpcomingAdapter: HorizontalAnimeAdapter
+    private lateinit var topAiringAdapter: HorizontalAnimeAdapter
     private lateinit var viewModel: SearchAnimeHorizontalViewHolder
     private val viewModelFactory: AnimeViewModelFactory by instance()
 
@@ -33,17 +37,42 @@ class AnimeSearch : Fragment(),KodeinAware {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val recyclerView: RecyclerView = view.findViewById(R.id.recycleViewTopAnime)
-        recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        val recyclerViewTopAnime: RecyclerView = view.findViewById(R.id.recycleViewTopAnime)
+        recyclerViewTopAnime.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        topAnimeAdapter = HorizontalAnimeAdapter()
+        recyclerViewTopAnime.adapter = topAnimeAdapter
 
-        animeAdapter = HorizontalAnimeAdapter()
-        recyclerView.adapter = animeAdapter
+        val recyclerViewRecommendedAnime: RecyclerView = view.findViewById(R.id.recycleviewRecommendation)
+        recyclerViewRecommendedAnime.layoutManager = LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false)
+        recommendedAnimeAdapter = HorizontalAnimeRecommendedAdapter()
+        recyclerViewRecommendedAnime.adapter = recommendedAnimeAdapter
+
+        val recyclerViewTopUpcoming: RecyclerView = view.findViewById(R.id.recycleviewTopUpcoming)
+        recyclerViewTopUpcoming.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        topUpcomingAdapter = HorizontalAnimeAdapter()
+        recyclerViewTopUpcoming.adapter = topUpcomingAdapter
+
+        val recyclerViewTopAiringAnime: RecyclerView = view.findViewById(R.id.recycleviewTopAiring)
+        recyclerViewTopAiringAnime.layoutManager = LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false)
+        topAiringAdapter = HorizontalAnimeAdapter()
+        recyclerViewTopAiringAnime.adapter = topAiringAdapter
 
         viewModel = ViewModelProvider(this, viewModelFactory).get(SearchAnimeHorizontalViewHolder ::class.java)
-        viewModel.animeList.observe(viewLifecycleOwner) { animeList ->
-            animeAdapter.submitList(animeList)
+        viewModel.topAnimeList.observe(viewLifecycleOwner) { animeList ->
+            topAnimeAdapter.submitList(animeList)
+        }
+        viewModel.recommendedAnimeList.observe(viewLifecycleOwner) { animeList ->
+            recommendedAnimeAdapter.submitList(animeList)
+        }
+        viewModel.topUpcomingAnimeList.observe(viewLifecycleOwner) { animeList ->
+            topUpcomingAdapter.submitList(animeList)
+        }
+        viewModel.topAiringAnimeList.observe(viewLifecycleOwner) { animeList ->
+            topAiringAdapter.submitList(animeList)
         }
         viewModel.fetchTopAnime()
+        viewModel.fetchRecommendedAnime()
+        viewModel.fetchTopUpcomingAnime()
+        viewModel.fetchTopAiringAnime()
     }
-
 }

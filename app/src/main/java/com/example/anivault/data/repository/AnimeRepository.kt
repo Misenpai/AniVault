@@ -1,15 +1,16 @@
     package com.example.anivault.data.repository
 
     import android.icu.util.Calendar
-    import com.example.anivault.data.network.JikanApiService
-    import com.example.anivault.data.network.response.AnimeResponse
-    import com.example.anivault.data.network.response.YearData
-    import com.example.anivault.ui.dataclassess.Anime
-    import com.example.anivault.ui.dataclassess.HorizontalAnime
-    import kotlinx.coroutines.delay
-    import kotlinx.coroutines.flow.Flow
-    import kotlinx.coroutines.flow.flow
-    import retrofit2.HttpException
+import com.example.anivault.data.network.JikanApiService
+import com.example.anivault.data.network.response.AnimeRecommendationResponse
+import com.example.anivault.data.network.response.AnimeResponse
+import com.example.anivault.data.network.response.YearData
+import com.example.anivault.ui.dataclassess.Anime
+import com.example.anivault.ui.dataclassess.HorizontalAnime
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import retrofit2.HttpException
 
     class AnimeRepository(private val apiService: JikanApiService) {
 
@@ -31,6 +32,13 @@
             }
         }
 
+        fun getAnimeListNextSeasonSearch(): Flow<List<HorizontalAnime>> {
+            val (nextSeason, nextYear) = getNextSeasonInfo()
+            return getAnimeListHorizontal { page ->
+                apiService.getNextSeasonAnime(nextYear, nextSeason, page)
+            }
+        }
+
         suspend fun getSeasons(): List<YearData> {
             return apiService.getSeasons().data
         }
@@ -38,6 +46,27 @@
         fun getAnimeArchive(year: String, season: String): Flow<List<Anime>> = getAnimeList { page ->
             apiService.getAnimeArchive(year, season, page)
         }
+
+
+        fun getTopAiringAnime(): Flow<List<HorizontalAnime>> = getTopAiringAnimeList { filter ->
+            apiService.getTopAnimeAiring(filter, 1)
+        }
+
+        fun getTopAiringAnimeList(apiCall: suspend (String) -> AnimeResponse): Flow<List<HorizontalAnime>> = flow {
+            try {
+                val response = apiCall("airing")
+                val animeList = response.data.map { animeData ->
+                    HorizontalAnime(
+                        title = animeData.title,
+                        imageUrl = animeData.images.jpg.image_url
+                    )
+                }
+                emit(animeList)
+            } catch (e: Exception) {
+                throw e
+            }
+        }
+
 
 
         private fun getAnimeList(apiCall: suspend (Int) -> AnimeResponse): Flow<List<Anime>> = flow {
@@ -116,8 +145,29 @@
             }
         }
 
+        fun getAnimeListHorizontalRecommendation(apiCall: suspend (Int) -> AnimeRecommendationResponse): Flow<List<HorizontalAnime>> = flow {
+            try {
+                val response = apiCall(1)
+                val animeList = response.data.flatMap { recommendationEntry ->
+                    recommendationEntry.entry.map { animeEntry ->
+                        HorizontalAnime(
+                            title = animeEntry.title,
+                            imageUrl = animeEntry.images.jpg.image_url
+                        )
+                    }
+                }
+                emit(animeList)
+            } catch (e: Exception) {
+                throw e
+            }
+        }
+
         fun getTopAnimeHorizontal(): Flow<List<HorizontalAnime>> = getAnimeListHorizontal { page ->
             apiService.getTopAnime(page)
+        }
+
+        fun getRecommendationAnimeHorizontal(): Flow<List<HorizontalAnime>> = getAnimeListHorizontalRecommendation { page ->
+            apiService.getRecommendationAnime(page)
         }
 
     }
