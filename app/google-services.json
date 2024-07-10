@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "46894416743",
+    "project_id": "anivault-24da7",
+    "storage_bucket": "anivault-24da7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:46894416743:android:80d286ee15f9793e3fe5c2",
+        "android_client_info": {
+          "package_name": "com.example.anivault"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgBmqRw0ipF4fJDucSJuoP8PWA1mafAgA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

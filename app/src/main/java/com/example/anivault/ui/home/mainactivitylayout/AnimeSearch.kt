@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.anivault.R
@@ -13,6 +14,8 @@ import com.example.anivault.ui.adapters.HorizontalAnimeAdapter
 import com.example.anivault.ui.adapters.HorizontalAnimeRecommendedAdapter
 import com.example.anivault.ui.home.seasonlayouts.AnimeViewModelFactory
 import com.example.anivault.ui.viewmodel.SearchAnimeHorizontalViewHolder
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
@@ -71,8 +74,13 @@ class AnimeSearch : Fragment(),KodeinAware {
             topAiringAdapter.submitList(animeList)
         }
         viewModel.fetchTopAnime()
-        viewModel.fetchRecommendedAnime()
-        viewModel.fetchTopUpcomingAnime()
-        viewModel.fetchTopAiringAnime()
+        viewLifecycleOwner.lifecycleScope.launch {
+            delay(500) // Wait for 250ms
+            viewModel.fetchRecommendedAnime()
+            delay(500) // Wait for another 250ms
+            viewModel.fetchTopUpcomingAnime()
+            delay(500) // Wait for another 250ms
+            viewModel.fetchTopAiringAnime()
+        }
     }
 }
