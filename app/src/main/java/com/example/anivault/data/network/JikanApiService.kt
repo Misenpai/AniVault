@@ -1,5 +1,6 @@
 package com.example.anivault.data.network
 
+import com.example.anivault.data.network.response.AnimeDetailsResponse
 import com.example.anivault.data.network.response.AnimeRecommendationResponse
 import com.example.anivault.data.network.response.AnimeResponse
 import com.example.anivault.data.network.response.SeasonResponse
@@ -43,5 +44,8 @@ interface JikanApiService {
 
     @GET("top/anime")
     suspend fun getTopAnimeAiring(@Query("filter") filter: String,@Query("page") page: Int): AnimeResponse
+
+    @GET("anime/{id}/full")
+    suspend fun getAnimeDetails(@Path("id") id: Int): AnimeDetailsResponse
 
 }

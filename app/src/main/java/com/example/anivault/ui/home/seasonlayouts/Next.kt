@@ -1,5 +1,6 @@
 package com.example.anivault.ui.home.seasonlayouts
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.anivault.R
 import com.example.anivault.ui.adapters.AnimeAdapter
+import com.example.anivault.ui.home.animepage.AnimeScreen
 import com.example.anivault.ui.viewmodel.AnimeViewModelNextAnime
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
@@ -37,7 +39,11 @@ class Next : Fragment(),KodeinAware {
         val recyclerView: RecyclerView = view.findViewById(R.id.recycleViewNextSeason)
         recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
 
-        animeAdapter = AnimeAdapter()
+        animeAdapter = AnimeAdapter { anime ->
+            val intent = Intent(requireContext(), AnimeScreen::class.java)
+            intent.putExtra("animeId", anime.mal_id)
+            startActivity(intent)
+        }
         recyclerView.adapter = animeAdapter
 
         viewModel = ViewModelProvider(this, viewModelFactory).get(AnimeViewModelNextAnime::class.java)

@@ -2,7 +2,8 @@
 
     import android.icu.util.Calendar
 import com.example.anivault.data.network.JikanApiService
-import com.example.anivault.data.network.response.AnimeRecommendationResponse
+    import com.example.anivault.data.network.response.AnimeDetails
+    import com.example.anivault.data.network.response.AnimeRecommendationResponse
 import com.example.anivault.data.network.response.AnimeResponse
 import com.example.anivault.data.network.response.YearData
 import com.example.anivault.ui.dataclassess.Anime
@@ -78,6 +79,7 @@ import retrofit2.HttpException
                     val response = apiCall(currentPage)
                     val animeList = response.data.map { animeData ->
                         Anime(
+                            mal_id = animeData.mal_id,
                             imageUrl = animeData.images.jpg.image_url,
                             title = animeData.title,
                             genres = animeData.genres.map { it.name }
@@ -168,6 +170,11 @@ import retrofit2.HttpException
 
         fun getRecommendationAnimeHorizontal(): Flow<List<HorizontalAnime>> = getAnimeListHorizontalRecommendation { page ->
             apiService.getRecommendationAnime(page)
+        }
+
+        fun getAnimeDetailsFlow(animeId: Int): Flow<AnimeDetails> = flow {
+            val response = apiService.getAnimeDetails(animeId)
+            emit(response.data)
         }
 
     }

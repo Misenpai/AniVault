@@ -9,7 +9,7 @@ import com.example.anivault.R
 import com.example.anivault.ui.dataclassess.Anime
 import com.example.anivault.ui.viewholder.AnimeViewHolder
 
-class AnimeAdapter : ListAdapter<Anime, AnimeViewHolder>(AnimeDiffCallback()) {
+class AnimeAdapter(private val onItemClick: (Anime) -> Unit) : ListAdapter<Anime, AnimeViewHolder>(AnimeDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AnimeViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -24,11 +24,15 @@ class AnimeAdapter : ListAdapter<Anime, AnimeViewHolder>(AnimeDiffCallback()) {
         Glide.with(holder.itemView.context)
             .load(anime.imageUrl)
             .into(holder.animePic)
+
+        holder.itemView.setOnClickListener {
+            onItemClick(anime)
+        }
     }
 
     class AnimeDiffCallback : DiffUtil.ItemCallback<Anime>() {
         override fun areItemsTheSame(oldItem: Anime, newItem: Anime): Boolean {
-            return oldItem.title == newItem.title // Assuming title is unique
+            return oldItem.mal_id == newItem.mal_id
         }
 
         override fun areContentsTheSame(oldItem: Anime, newItem: Anime): Boolean {
