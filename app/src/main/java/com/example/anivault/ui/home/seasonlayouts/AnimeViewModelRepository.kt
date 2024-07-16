@@ -37,6 +37,7 @@ class AnimeViewModelFactory(private val repository: AnimeRepository) : ViewModel
             @Suppress("UNCHECKED_CAST")
             return SearchAnimeHorizontalViewHolder(repository) as T
         }
+
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 

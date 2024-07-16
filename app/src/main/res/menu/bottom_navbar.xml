@@ -10,10 +10,6 @@
         android:icon="@drawable/search"
         android:title="." />
     <item
-        android:id="@+id/chat"
-        android:icon="@drawable/chat"
-        android:title="." />
-    <item
         android:id="@+id/library"
         android:icon="@drawable/baseline_library_add_24"
         android:title="." />

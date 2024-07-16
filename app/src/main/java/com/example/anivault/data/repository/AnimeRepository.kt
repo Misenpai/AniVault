@@ -58,6 +58,7 @@ import retrofit2.HttpException
                 val response = apiCall("airing")
                 val animeList = response.data.map { animeData ->
                     HorizontalAnime(
+                        mal_id = animeData.mal_id,
                         title = animeData.title,
                         imageUrl = animeData.images.jpg.image_url
                     )
@@ -137,6 +138,7 @@ import retrofit2.HttpException
                 val response = apiCall(1)
                 val animeList = response.data.map { animeData ->
                     HorizontalAnime(
+                        mal_id = animeData.mal_id,
                         title = animeData.title,
                         imageUrl = animeData.images.jpg.image_url
                     )
@@ -153,6 +155,7 @@ import retrofit2.HttpException
                 val animeList = response.data.flatMap { recommendationEntry ->
                     recommendationEntry.entry.map { animeEntry ->
                         HorizontalAnime(
+                            mal_id = animeEntry.mal_id,
                             title = animeEntry.title,
                             imageUrl = animeEntry.images.jpg.image_url
                         )

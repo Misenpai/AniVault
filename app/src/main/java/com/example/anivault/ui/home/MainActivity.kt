@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import com.example.anivault.R
 import com.example.anivault.ui.home.mainactivitylayout.AnimeSearch
 import com.example.anivault.ui.home.mainactivitylayout.animeseason
-import com.example.anivault.ui.home.mainactivitylayout.chat
 import com.example.anivault.ui.home.mainactivitylayout.library
 import com.example.anivault.ui.home.mainactivitylayout.profile
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -36,10 +35,6 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.search->{
                     loadFragment(AnimeSearch())
-                    true
-                }
-                R.id.chat->{
-                    loadFragment(chat())
                     true
                 }
                 R.id.library->{

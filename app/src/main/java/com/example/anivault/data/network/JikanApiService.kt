@@ -3,7 +3,9 @@ package com.example.anivault.data.network
 import com.example.anivault.data.network.response.AnimeDetailsResponse
 import com.example.anivault.data.network.response.AnimeRecommendationResponse
 import com.example.anivault.data.network.response.AnimeResponse
+import com.example.anivault.data.network.response.AnimeSearchResponse
 import com.example.anivault.data.network.response.SeasonResponse
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -47,5 +49,8 @@ interface JikanApiService {
 
     @GET("anime/{id}/full")
     suspend fun getAnimeDetails(@Path("id") id: Int): AnimeDetailsResponse
+
+    @GET("anime")
+    suspend fun searchAnime(@Query("q") query: String): Response<AnimeSearchResponse>
 
 }

@@ -9,7 +9,7 @@ import com.example.anivault.R
 import com.example.anivault.ui.dataclassess.HorizontalAnime
 import com.example.anivault.ui.viewholder.HorizontalAnimeViewHolder
 
-class HorizontalAnimeAdapter : ListAdapter<HorizontalAnime, HorizontalAnimeViewHolder>(HorizontalAnimeDiffCallback()) {
+class HorizontalAnimeAdapter(private val onItemClick: (HorizontalAnime) -> Unit) : ListAdapter<HorizontalAnime, HorizontalAnimeViewHolder>(HorizontalAnimeDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HorizontalAnimeViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -24,6 +24,9 @@ class HorizontalAnimeAdapter : ListAdapter<HorizontalAnime, HorizontalAnimeViewH
         Glide.with(holder.itemView.context)
             .load(anime.imageUrl)
             .into(holder.animePic)
+        holder.itemView.setOnClickListener {
+            onItemClick(anime)
+        }
     }
 
     class HorizontalAnimeDiffCallback : DiffUtil.ItemCallback<HorizontalAnime>() {
