@@ -52,6 +52,7 @@ class Signup : AppCompatActivity(),AuthListener,KodeinAware {
     override fun onSuccess(user: User) {
         progressBar.hide()
         toast("${user.name} is Signed up")
+        (binding.viewmodel)?.checkStoredUsers()
     }
 
     override fun onFailure(message: String) {

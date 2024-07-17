@@ -11,11 +11,9 @@ import com.example.anivault.data.db.Entities.User
     version = 2
 )
 abstract class AppDatabase : RoomDatabase() {
-
     abstract fun getUserDao(): UserDao
 
     companion object {
-
         @Volatile
         private var instance: AppDatabase? = null
         private val LOCK = Any()

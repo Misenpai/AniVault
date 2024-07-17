@@ -1,13 +1,15 @@
 package com.example.anivault.ui.auth
 
 import UserRepository
-import android.content.Intent
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.anivault.utils.ApiException
 import com.example.anivault.utils.NoInternetException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import toUser
 
 class AuthViewModel(
@@ -33,6 +35,7 @@ class AuthViewModel(
                     val user = userPayload.toUser(authResponse.token)
                     repository.saveUser(user)
                     authListener?.onSuccess(user)
+                    checkStoredUsers()
                     return@launch
                 }
                 authListener?.onFailure("Failed to login")
@@ -44,33 +47,11 @@ class AuthViewModel(
         }
     }
 
-    fun onLogin(view: View) {
-        Intent(view.context, Login::class.java).also {
-            view.context.startActivity(it)
-        }
-    }
-
-    fun onSignup(view: View) {
-        Intent(view.context, Signup::class.java).also {
-            view.context.startActivity(it)
-        }
-    }
-
     fun onSignupButtonClick(view: View) {
         authListener?.onStarted()
 
-        if (name.isNullOrEmpty()) {
-            authListener?.onFailure("Name is required")
-            return
-        }
-
-        if (email.isNullOrEmpty()) {
-            authListener?.onFailure("Email is required")
-            return
-        }
-
-        if (password.isNullOrEmpty()) {
-            authListener?.onFailure("Please enter a password")
+        if (name.isNullOrEmpty() || email.isNullOrEmpty() || password.isNullOrEmpty()) {
+            authListener?.onFailure("All fields are required")
             return
         }
 
@@ -81,6 +62,7 @@ class AuthViewModel(
                     val user = userPayload.toUser(authResponse.token)
                     repository.saveUser(user)
                     authListener?.onSuccess(user)
+                    checkStoredUsers()
                     return@launch
                 }
                 authListener?.onFailure("Failed to sign up")
@@ -88,6 +70,18 @@ class AuthViewModel(
                 authListener?.onFailure(e.message!!)
             } catch (e: NoInternetException) {
                 authListener?.onFailure(e.message!!)
+            }
+        }
+    }
+
+    fun checkStoredUsers() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val users = repository.getAllUsers()
+            Log.d("StoredUsers", "Number of users: ${users.size}")
+            withContext(Dispatchers.Main) {
+                for (user in users) {
+                    Log.d("StoredUser", "ID: ${user.id}, Name: ${user.name}, Email: ${user.email}")
+                }
             }
         }
     }

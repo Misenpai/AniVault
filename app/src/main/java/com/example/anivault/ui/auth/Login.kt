@@ -6,7 +6,6 @@ import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider.NewInstanceFactory.Companion.instance
 import androidx.lifecycle.ViewModelProviders
 import com.example.anivault.R
 import com.example.anivault.data.db.Entities.User
@@ -53,6 +52,7 @@ class Login : AppCompatActivity(),AuthListener,KodeinAware {
     override fun onSuccess(user:User) {
         progressBar.hide()
         toast("${user.name} is Logged in")
+        (binding.viewmodel)?.checkStoredUsers()
     }
 
     override fun onFailure(message: String) {
