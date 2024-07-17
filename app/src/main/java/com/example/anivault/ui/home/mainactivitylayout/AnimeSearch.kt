@@ -9,6 +9,7 @@ import android.widget.FrameLayout
 import android.widget.ScrollView
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -118,33 +119,54 @@ class AnimeSearch : Fragment(), KodeinAware {
         }
     }
 
+    private var isSearchViewPageVisible = false
+
     private fun setupSearchView() {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 if (!query.isNullOrBlank()) {
-                    val searchViewPage = SearchViewPage.newInstance(query)
-                    childFragmentManager.beginTransaction()
-                        .replace(R.id.contentContainer, searchViewPage)
-                        .addToBackStack(null)
-                        .commit()
-                    scrollView.visibility = View.GONE
+                    showSearchViewPage(query)
                 }
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                // Handle query text changes if needed
+                if (newText.isNullOrEmpty() && isSearchViewPageVisible) {
+                    returnToAnimeSearch()
+                }
                 return true
             }
         })
 
         searchView.setOnSearchClickListener {
-            val searchViewPage = SearchViewPage()
+            showSearchViewPage(null)
+        }
+
+        searchView.setOnCloseListener {
+            returnToAnimeSearch()
+            false
+        }
+    }
+
+
+    private fun showSearchViewPage(query: String?) {
+        if (!isSearchViewPageVisible) {
+            val searchViewPage = if (query != null) SearchViewPage.newInstance(query) else SearchViewPage()
             childFragmentManager.beginTransaction()
                 .replace(R.id.contentContainer, searchViewPage)
                 .addToBackStack(null)
                 .commit()
             scrollView.visibility = View.GONE
+            isSearchViewPageVisible = true
+        }
+    }
+
+    private fun returnToAnimeSearch() {
+        if (isSearchViewPageVisible) {
+            childFragmentManager.popBackStack()
+            scrollView.visibility = View.VISIBLE
+            searchView.clearFocus()
+            isSearchViewPageVisible = false
         }
     }
 
@@ -156,8 +178,19 @@ class AnimeSearch : Fragment(), KodeinAware {
 
     override fun onResume() {
         super.onResume()
-        // Reset to ScrollView when returning to this fragment
-        scrollView.visibility = View.VISIBLE
-        childFragmentManager.popBackStack()
+        // Only reset if SearchViewPage is not visible
+        if (!isSearchViewPageVisible) {
+            scrollView.visibility = View.VISIBLE
+            childFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        }
+    }
+
+    fun onBackPressed(): Boolean {
+        return if (isSearchViewPageVisible) {
+            returnToAnimeSearch()
+            true
+        } else {
+            false
+        }
     }
 }

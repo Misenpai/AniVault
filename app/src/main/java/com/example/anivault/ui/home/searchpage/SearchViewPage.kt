@@ -1,5 +1,6 @@
 package com.example.anivault.ui.home.searchpage
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.anivault.R
 import com.example.anivault.data.network.JikanApiService
 import com.example.anivault.ui.adapters.SearchResultAdapter
+import com.example.anivault.ui.home.animepage.AnimeScreen
 import com.example.anivault.ui.viewmodel.SearchViewModel
 import com.example.anivault.ui.viewmodelfactory.SearchViewModelFactory
 import retrofit2.Retrofit
@@ -62,7 +64,11 @@ class SearchViewPage : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        searchAdapter = SearchResultAdapter()
+        searchAdapter = SearchResultAdapter { anime ->
+            val intent = Intent(requireContext(), AnimeScreen::class.java)
+            intent.putExtra("animeId", anime.mal_id)
+            startActivity(intent)
+        }
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = searchAdapter
 

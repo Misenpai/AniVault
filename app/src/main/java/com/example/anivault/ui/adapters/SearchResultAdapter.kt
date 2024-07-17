@@ -12,7 +12,7 @@ import com.bumptech.glide.Glide
 import com.example.anivault.R
 import com.example.anivault.data.network.response.AnimeSearchItem
 
-class SearchResultAdapter : ListAdapter<AnimeSearchItem, SearchResultAdapter.ViewHolder>(DiffCallback()) {
+class SearchResultAdapter(private val onItemClick: (AnimeSearchItem) -> Unit) : ListAdapter<AnimeSearchItem, SearchResultAdapter.ViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.anime_search_card_view, parent, false)
@@ -22,6 +22,10 @@ class SearchResultAdapter : ListAdapter<AnimeSearchItem, SearchResultAdapter.Vie
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
         holder.bind(item)
+
+        holder.itemView.setOnClickListener {
+            onItemClick(item)
+        }
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

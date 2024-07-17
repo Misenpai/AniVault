@@ -24,8 +24,14 @@
         <item name="cornerSizeTopRight">8dp</item>
         <item name="cornerSizeBottomLeft">8dp</item>
         <item name="cornerSizeBottomRight">8dp</item>
-
-        <!-- Color attributes -->
         <item name="backgroundTint">@color/violet</item>
+    </style>
+
+    <style name="WhiteSearchViewStyle" parent="Widget.AppCompat.SearchView">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:editTextColor">@android:color/white</item>
+        <item name="android:textColorHint">@android:color/white</item>
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="searchViewStyle">@style/Widget.AppCompat.SearchView</item>
     </style>
 </resources>
