@@ -1,8 +1,8 @@
 package com.example.anivault.ui.auth
 
-import UserRepository
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.anivault.data.repository.UserRepository
 
 @Suppress("UNCHECKED_CAST")
 class AuthViewModelFactory(

@@ -1,10 +1,10 @@
 package com.example.anivault
 
-import UserRepository
 import android.app.Application
 import com.example.anivault.data.db.AppDatabase
 import com.example.anivault.data.network.MyApi
 import com.example.anivault.data.network.NetworkConnectionInterceptor
+import com.example.anivault.data.repository.UserRepository
 import com.example.anivault.ui.auth.AuthViewModelFactory
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
@@ -21,7 +21,8 @@ class Anivault : Application(), KodeinAware {
         bind() from singleton { NetworkConnectionInterceptor(instance()) }
         bind() from singleton { MyApi(instance()) }
         bind() from singleton { AppDatabase(instance()) }
-        bind() from singleton { UserRepository(instance(), instance()) }
+        bind() from singleton { instance<AppDatabase>().getUserDao() }
+        bind() from singleton { UserRepository(instance(), instance(), instance()) }
         bind() from provider { AuthViewModelFactory(instance()) }
         import(appModule)
     }

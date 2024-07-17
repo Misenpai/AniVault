@@ -1,10 +1,10 @@
 package com.example.anivault.ui.auth
 
-import UserRepository
 import android.util.Log
 import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.anivault.data.repository.UserRepository
 import com.example.anivault.utils.ApiException
 import com.example.anivault.utils.NoInternetException
 import kotlinx.coroutines.Dispatchers
@@ -13,6 +13,7 @@ import kotlinx.coroutines.withContext
 import toUser
 
 class AuthViewModel(
+
     private val repository: UserRepository
 ) : ViewModel() {
     var name: String? = null

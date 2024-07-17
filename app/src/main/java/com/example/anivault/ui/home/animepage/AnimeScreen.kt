@@ -1,5 +1,6 @@
 package com.example.anivault.ui.home.animepage
 
+import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -12,7 +13,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.anivault.R
 import com.example.anivault.data.network.response.AnimeDetails
+import com.example.anivault.ui.home.AddingAnimeDatabase
 import com.example.anivault.ui.viewmodel.AnimeDetailsViewModel
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class AnimeScreen : AppCompatActivity() {
     private lateinit var viewModel: AnimeDetailsViewModel
@@ -26,6 +29,22 @@ class AnimeScreen : AppCompatActivity() {
         viewModel.fetchAnimeDetails(animeId)
 
         observeAnimeDetails()
+
+        findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener {
+            openAddingAnimeDatabase()
+        }
+    }
+
+    private fun openAddingAnimeDatabase() {
+        viewModel.animeDetails.value?.let { animeDetails ->
+            val intent = Intent(this, AddingAnimeDatabase::class.java).apply {
+                putExtra("mal_id", animeDetails.mal_id)
+                putExtra("anime_title", animeDetails.title)
+                putExtra("status", animeDetails.status)
+                putExtra("episodes", animeDetails.episodes)
+            }
+            startActivity(intent)
+        }
     }
 
     private fun observeAnimeDetails() {

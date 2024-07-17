@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Custom text style -->
     <style name="CustomTextStyle">
         <item name="android:fontFamily">@font/poppins_bold</item>
         <item name="android:textSize">30sp</item>
@@ -33,5 +32,28 @@
         <item name="android:textColorHint">@android:color/white</item>
         <item name="colorControlNormal">@android:color/white</item>
         <item name="searchViewStyle">@style/Widget.AppCompat.SearchView</item>
+    </style>
+
+    <style name="Widget.App.Button.OutlinedButton.IconOnly" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:minWidth">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:textColor">@color/violet</item>
+        <item name="strokeColor">@color/white</item>
+        <item name="cornerRadius">20dp</item>
+    </style>
+
+    <style name="Widget.App.Button.OutlinedButtonSave.IconOnly" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:minWidth">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="backgroundTint">@color/mint</item>
+        <item name="strokeColor">@color/white</item>
+        <item name="cornerRadius">20dp</item>
     </style>
 </resources>

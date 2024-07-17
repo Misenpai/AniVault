@@ -1,13 +1,21 @@
 package com.example.anivault.data.network
 
 import AuthResponse
+import com.example.anivault.data.network.response.AnimeStatusData
+import com.example.anivault.data.network.response.AnimeStatusListResponse
+import com.example.anivault.data.network.response.MessageResponse
 import okhttp3.OkHttpClient
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
+import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Path
 
 interface MyApi {
 
@@ -26,6 +34,24 @@ interface MyApi {
         @Field("email") email:String,
         @Field("password") password:String
     ):Response<AuthResponse>
+
+    @POST("/user/anime/status")
+    suspend fun insertAnimeStatus(@Body data: AnimeStatusData): Response<MessageResponse>
+
+    @PUT("/user/anime/status")
+    suspend fun updateAnimeStatus(@Body data: AnimeStatusData): Response<MessageResponse>
+
+    @DELETE("/user/anime/status/{userId}/{malId}")
+    suspend fun removeAnimeStatus(
+        @Path("userId") userId: Int,
+        @Path("malId") malId: Int
+    ): Response<MessageResponse>
+
+    @GET("/user/anime/status/{userId}/{status}")
+    suspend fun readAnimeStatus(
+        @Path("userId") userId: Int,
+        @Path("status") status: String
+    ): Response<AnimeStatusListResponse>
 
     companion object{
             operator fun invoke(
