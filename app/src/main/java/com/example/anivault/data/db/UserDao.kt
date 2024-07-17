@@ -5,16 +5,18 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.anivault.data.db.Entities.CURRENT_USER_ID
 import com.example.anivault.data.db.Entities.User
 
 @Dao
-interface UserDao{
-
+interface UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsert(user: User) : Long
+    suspend fun upsert(user: User): Long
 
-    @Query("SELECT * FROM user WHERE uid = $CURRENT_USER_ID")
-    fun getuser() : LiveData<User>
+    @Query("SELECT * FROM user WHERE id = :userId")
+    fun getUser(userId: Int): LiveData<User>
+
+    @Query("SELECT * FROM user LIMIT 1")
+    fun getAnyUser(): LiveData<User>
+
 
 }

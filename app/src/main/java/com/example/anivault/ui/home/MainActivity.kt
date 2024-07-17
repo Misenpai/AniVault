@@ -57,4 +57,5 @@ class MainActivity : AppCompatActivity() {
         fragmentTransaction.replace(R.id.frame_main_activity,fragment)
         fragmentTransaction.commit()
     }
+
 }

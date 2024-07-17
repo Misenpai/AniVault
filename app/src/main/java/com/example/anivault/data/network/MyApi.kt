@@ -1,6 +1,6 @@
 package com.example.anivault.data.network
 
-import com.example.anivault.data.network.response.AuthResponse
+import AuthResponse
 import okhttp3.OkHttpClient
 import retrofit2.Response
 import retrofit2.Retrofit

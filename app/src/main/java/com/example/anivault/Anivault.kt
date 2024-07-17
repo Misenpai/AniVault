@@ -1,10 +1,10 @@
 package com.example.anivault
 
+import UserRepository
 import android.app.Application
 import com.example.anivault.data.db.AppDatabase
 import com.example.anivault.data.network.MyApi
 import com.example.anivault.data.network.NetworkConnectionInterceptor
-import com.example.anivault.data.repository.UserRepository
 import com.example.anivault.ui.auth.AuthViewModelFactory
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware

@@ -1,97 +1,94 @@
 package com.example.anivault.ui.auth
 
+import UserRepository
 import android.content.Intent
 import android.view.View
 import androidx.lifecycle.ViewModel
-import com.example.anivault.data.repository.UserRepository
+import androidx.lifecycle.viewModelScope
 import com.example.anivault.utils.ApiException
-import com.example.anivault.utils.Coroutines
 import com.example.anivault.utils.NoInternetException
+import kotlinx.coroutines.launch
+import toUser
 
 class AuthViewModel(
     private val repository: UserRepository
-):ViewModel() {
-    var name:String? = null
-    var email:String? = null
-    var password:String? = null
-    var authListener:AuthListener? = null
+) : ViewModel() {
+    var name: String? = null
+    var email: String? = null
+    var password: String? = null
+    var authListener: AuthListener? = null
 
+    fun getLoggedInUser() = repository.getAnyUser()
 
-    fun getLoggedInUser() = repository.getUser()
-
-    fun onLoginButtonClick(view:View){
+    fun onLoginButtonClick(view: View) {
         authListener?.onStarted()
-        if (email.isNullOrEmpty()||password.isNullOrEmpty()){
+        if (email.isNullOrEmpty() || password.isNullOrEmpty()) {
             authListener?.onFailure("Invalid Email or Password")
             return
         }
-        Coroutines.main {
+        viewModelScope.launch {
             try {
                 val authResponse = repository.userLogin(email!!, password!!)
-                authResponse.result?.payload?.let {
-                    authListener?.onSuccess(it)
-                    repository.saveUser(it)
-                    return@main
+                authResponse.result?.payload?.let { userPayload ->
+                    val user = userPayload.toUser(authResponse.token)
+                    repository.saveUser(user)
+                    authListener?.onSuccess(user)
+                    return@launch
                 }
                 authListener?.onFailure("Failed to login")
-            }catch(e: ApiException){
+            } catch (e: ApiException) {
                 authListener?.onFailure(e.message!!)
-            }catch(e: NoInternetException){
+            } catch (e: NoInternetException) {
                 authListener?.onFailure(e.message!!)
             }
         }
     }
 
-    fun onLogin(view: View){
+    fun onLogin(view: View) {
         Intent(view.context, Login::class.java).also {
             view.context.startActivity(it)
         }
     }
 
-    fun onSignup(view: View){
+    fun onSignup(view: View) {
         Intent(view.context, Signup::class.java).also {
             view.context.startActivity(it)
         }
     }
 
-
-    fun onSignupButtonClick(view: View){
+    fun onSignupButtonClick(view: View) {
         authListener?.onStarted()
 
-        if(name.isNullOrEmpty()){
+        if (name.isNullOrEmpty()) {
             authListener?.onFailure("Name is required")
             return
         }
 
-        if(email.isNullOrEmpty()){
+        if (email.isNullOrEmpty()) {
             authListener?.onFailure("Email is required")
             return
         }
 
-        if(password.isNullOrEmpty()){
+        if (password.isNullOrEmpty()) {
             authListener?.onFailure("Please enter a password")
             return
         }
 
-
-
-        Coroutines.main {
+        viewModelScope.launch {
             try {
                 val authResponse = repository.userSignup(name!!, email!!, password!!)
-                authResponse.result?.payload?.let {
-                    authListener?.onSuccess(it)
-                    repository.saveUser(it)
-                    return@main
+                authResponse.result?.payload?.let { userPayload ->
+                    val user = userPayload.toUser(authResponse.token)
+                    repository.saveUser(user)
+                    authListener?.onSuccess(user)
+                    return@launch
                 }
-                authListener?.onFailure(authResponse.message!!)
-            }catch(e: ApiException){
+                authListener?.onFailure("Failed to sign up")
+            } catch (e: ApiException) {
                 authListener?.onFailure(e.message!!)
-            }catch (e: NoInternetException){
+            } catch (e: NoInternetException) {
                 authListener?.onFailure(e.message!!)
             }
         }
-
     }
-
-
 }
