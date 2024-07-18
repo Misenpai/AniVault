@@ -10,20 +10,20 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.anivault.R
-import com.example.anivault.ui.viewmodel.AnimeStatusDataWithDetailsPlanToWatch
+import com.example.anivault.ui.viewmodel.AnimeStatusDataWithDetailsDropped
 
-class AnimeStatusAdapter : ListAdapter<AnimeStatusDataWithDetailsPlanToWatch, AnimeStatusAdapter.AnimeViewHolder>(AnimeStatusDiffCallback()) {
+class AnimeStatusAdapterDropped : ListAdapter<AnimeStatusDataWithDetailsDropped, AnimeStatusAdapterDropped.AnimeViewHolderDropped>(AnimeStatusDiffCallbackDropped()) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AnimeViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AnimeViewHolderDropped {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.library_card_view, parent, false)
-        return AnimeViewHolder(view)
+        return AnimeViewHolderDropped(view)
     }
 
-    override fun onBindViewHolder(holder: AnimeViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: AnimeViewHolderDropped, position: Int) {
         holder.bind(getItem(position))
     }
 
-    class AnimeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class AnimeViewHolderDropped(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val animeName: TextView = itemView.findViewById(R.id.search_anime_name_library)
         private val watchedEpisodes: TextView = itemView.findViewById(R.id.currently_watched_episodes)
         private val totalEpisodes: TextView = itemView.findViewById(R.id.total_number_of_episodes)
@@ -32,7 +32,7 @@ class AnimeStatusAdapter : ListAdapter<AnimeStatusDataWithDetailsPlanToWatch, An
         private val searchSeason: TextView = itemView.findViewById(R.id.search_season)
         private val searchYear: TextView = itemView.findViewById(R.id.search_year)
 
-        fun bind(item: AnimeStatusDataWithDetailsPlanToWatch) {
+        fun bind(item: AnimeStatusDataWithDetailsDropped) {
             val anime = item.statusData
             val details = item.details
 
@@ -51,12 +51,12 @@ class AnimeStatusAdapter : ListAdapter<AnimeStatusDataWithDetailsPlanToWatch, An
     }
 }
 
-class AnimeStatusDiffCallback : DiffUtil.ItemCallback<AnimeStatusDataWithDetailsPlanToWatch>() {
-    override fun areItemsTheSame(oldItem: AnimeStatusDataWithDetailsPlanToWatch, newItem: AnimeStatusDataWithDetailsPlanToWatch): Boolean {
+class AnimeStatusDiffCallbackDropped : DiffUtil.ItemCallback<AnimeStatusDataWithDetailsDropped>() {
+    override fun areItemsTheSame(oldItem: AnimeStatusDataWithDetailsDropped, newItem: AnimeStatusDataWithDetailsDropped): Boolean {
         return oldItem.statusData.mal_id == newItem.statusData.mal_id
     }
 
-    override fun areContentsTheSame(oldItem: AnimeStatusDataWithDetailsPlanToWatch, newItem: AnimeStatusDataWithDetailsPlanToWatch): Boolean {
+    override fun areContentsTheSame(oldItem: AnimeStatusDataWithDetailsDropped, newItem: AnimeStatusDataWithDetailsDropped): Boolean {
         return oldItem == newItem
     }
 }

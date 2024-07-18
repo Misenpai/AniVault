@@ -3,6 +3,7 @@ package com.example.anivault
 import com.example.anivault.data.network.JikanApiService
 import com.example.anivault.data.repository.AnimeRepository
 import com.example.anivault.ui.home.seasonlayouts.AnimeViewModelFactory
+import com.example.anivault.ui.viewmodelfactory.LibraryViewModelFactory
 import org.kodein.di.Kodein
 import org.kodein.di.generic.bind
 import org.kodein.di.generic.instance
@@ -21,4 +22,8 @@ val appModule = Kodein.Module("appModule") {
     }
     bind<AnimeRepository>() with singleton { AnimeRepository(instance()) }
     bind<AnimeViewModelFactory>() with provider { AnimeViewModelFactory(instance()) }
+
+    bind<LibraryViewModelFactory>() with provider {
+        LibraryViewModelFactory(instance(), instance(), instance())
+    }
 }

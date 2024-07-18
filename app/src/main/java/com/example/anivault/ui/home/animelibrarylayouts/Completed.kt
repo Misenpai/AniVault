@@ -10,33 +10,33 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.anivault.R
-import com.example.anivault.data.db.AppDatabase
-import com.example.anivault.data.network.MyApi
-import com.example.anivault.data.network.NetworkConnectionInterceptor
-import com.example.anivault.ui.adapters.AnimeStatusAdapter
+import com.example.anivault.ui.adapters.AnimeStatusAdapterCompleted
 import com.example.anivault.ui.viewmodel.CompletedViewModel
 import com.example.anivault.ui.viewmodelfactory.LibraryViewModelFactory
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.x.kodein
+import org.kodein.di.generic.instance
 
-class Completed : Fragment() {
+class Completed : Fragment(), KodeinAware {
+    override val kodein by kodein()
+    private val viewModelFactory: LibraryViewModelFactory by instance()
 
     private lateinit var viewModel: CompletedViewModel
-    private lateinit var adapter: AnimeStatusAdapter
+    private lateinit var adapter: AnimeStatusAdapterCompleted
     private lateinit var recyclerView: RecyclerView
     private lateinit var totalAnimeText: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         return inflater.inflate(R.layout.fragment_completed, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val api = MyApi.invoke(NetworkConnectionInterceptor(requireContext()))
-        val db = AppDatabase(requireContext())
-        viewModel = ViewModelProvider(this, LibraryViewModelFactory(api, db))
+        viewModel = ViewModelProvider(this, viewModelFactory)
             .get(CompletedViewModel::class.java)
 
         recyclerView = view.findViewById(R.id.recycleViewCompletedLibrary)
@@ -49,7 +49,7 @@ class Completed : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = AnimeStatusAdapter()
+        adapter = AnimeStatusAdapterCompleted()
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
     }
@@ -60,5 +60,4 @@ class Completed : Fragment() {
             totalAnimeText.text = animeList.size.toString()
         }
     }
-
 }

@@ -10,14 +10,16 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.anivault.R
-import com.example.anivault.data.db.AppDatabase
-import com.example.anivault.data.network.MyApi
-import com.example.anivault.data.network.NetworkConnectionInterceptor
 import com.example.anivault.ui.adapters.AnimeStatusAdapter
 import com.example.anivault.ui.viewmodel.PlanToWatchViewModel
 import com.example.anivault.ui.viewmodelfactory.LibraryViewModelFactory
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.x.kodein
+import org.kodein.di.generic.instance
 
-class PlantoWatch : Fragment() {
+class PlantoWatch : Fragment(), KodeinAware {
+    override val kodein by kodein()
+    private val viewModelFactory: LibraryViewModelFactory by instance()
 
     private lateinit var viewModel: PlanToWatchViewModel
     private lateinit var adapter: AnimeStatusAdapter
@@ -34,9 +36,7 @@ class PlantoWatch : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val api = MyApi.invoke(NetworkConnectionInterceptor(requireContext()))
-        val db = AppDatabase(requireContext())
-        viewModel = ViewModelProvider(this, LibraryViewModelFactory(api, db))
+        viewModel = ViewModelProvider(this, viewModelFactory)
             .get(PlanToWatchViewModel::class.java)
 
         recyclerView = view.findViewById(R.id.recycleViewPlantoWatchLibrary)
