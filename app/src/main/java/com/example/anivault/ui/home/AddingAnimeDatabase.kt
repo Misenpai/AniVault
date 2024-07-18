@@ -1,6 +1,8 @@
 package com.example.anivault.ui.home
 
+import android.graphics.Rect
 import android.os.Bundle
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -38,19 +40,14 @@ class AddingAnimeDatabase : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_adding_anime_database)
 
-        // Create NetworkConnectionInterceptor
         val networkConnectionInterceptor = NetworkConnectionInterceptor(this)
 
-        // Create MyApi instance
         val api = MyApi(networkConnectionInterceptor)
 
-        // Create AppDatabase instance
         val db = AppDatabase(this)
 
-        // Get UserDao from AppDatabase
         val userDao = db.getUserDao()
 
-        // Create the UserRepository with the required dependencies
         val userRepository = UserRepository(api, db, userDao)
 
         val factory = AddingAnimeDatabaseViewModelFactory(userRepository)
@@ -110,6 +107,24 @@ class AddingAnimeDatabase : AppCompatActivity() {
         snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(recyclerView)
 
+        val displayMetrics = resources.displayMetrics
+        val screenWidth = displayMetrics.widthPixels
+        val itemWidth = screenWidth / 3
+
+        recyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
+            override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+                val position = parent.getChildAdapterPosition(view)
+                if (position == 0 || position == progressAdapter.itemCount - 1) {
+                    val padding = (screenWidth - itemWidth) / 2
+                    if (position == 0) {
+                        outRect.left = padding
+                    } else {
+                        outRect.right = padding
+                    }
+                }
+            }
+        })
+
         recyclerView.scrollToPosition(episodes / 2)
 
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -119,6 +134,7 @@ class AddingAnimeDatabase : AppCompatActivity() {
             }
         })
     }
+
 
     private fun updateSelectedNumber() {
         val centerView = snapHelper.findSnapView(recyclerView.layoutManager)
@@ -141,8 +157,13 @@ class AddingAnimeDatabase : AppCompatActivity() {
             val malId = intent.getIntExtra("mal_id", 0)
             val animeTitle = intent.getStringExtra("anime_title") ?: ""
             val totalEpisodes = intent.getIntExtra("episodes", 0)
-            val watchedEpisodes = getSelectedEpisodes()
             val status = getSelectedStatus()
+
+            val watchedEpisodes = when {
+                btnCompleted.isSelected -> totalEpisodes
+                btnPlanToWatch.isSelected -> 0
+                else -> getSelectedEpisodes() + 1
+            }
 
             val animeStatusData = AnimeStatusData(
                 user_id = userId,
@@ -169,7 +190,7 @@ class AddingAnimeDatabase : AppCompatActivity() {
             btnCompleted.isSelected -> "Completed"
             btnPlanToWatch.isSelected -> "Plan to Watch"
             btnDropped.isSelected -> "Dropped"
-            else -> "Plan to Watch" // Default status
+            else -> "Plan to Watch"
         }
     }
 
