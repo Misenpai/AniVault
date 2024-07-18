@@ -12,7 +12,7 @@ import com.bumptech.glide.Glide
 import com.example.anivault.R
 import com.example.anivault.ui.viewmodel.AnimeStatusDataWithDetailsDropped
 
-class AnimeStatusAdapterDropped : ListAdapter<AnimeStatusDataWithDetailsDropped, AnimeStatusAdapterDropped.AnimeViewHolderDropped>(AnimeStatusDiffCallbackDropped()) {
+class AnimeStatusAdapterDropped(private val onItemClick: (AnimeStatusDataWithDetailsDropped) -> Unit) : ListAdapter<AnimeStatusDataWithDetailsDropped, AnimeStatusAdapterDropped.AnimeViewHolderDropped>(AnimeStatusDiffCallbackDropped()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AnimeViewHolderDropped {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.library_card_view, parent, false)
@@ -21,6 +21,12 @@ class AnimeStatusAdapterDropped : ListAdapter<AnimeStatusDataWithDetailsDropped,
 
     override fun onBindViewHolder(holder: AnimeViewHolderDropped, position: Int) {
         holder.bind(getItem(position))
+
+        val anime = getItem(position)
+
+        holder.itemView.setOnClickListener {
+            onItemClick(anime)
+        }
     }
 
     class AnimeViewHolderDropped(itemView: View) : RecyclerView.ViewHolder(itemView) {

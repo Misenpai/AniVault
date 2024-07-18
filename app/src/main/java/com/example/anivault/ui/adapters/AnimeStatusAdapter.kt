@@ -12,7 +12,7 @@ import com.bumptech.glide.Glide
 import com.example.anivault.R
 import com.example.anivault.ui.viewmodel.AnimeStatusDataWithDetailsPlanToWatch
 
-class AnimeStatusAdapter : ListAdapter<AnimeStatusDataWithDetailsPlanToWatch, AnimeStatusAdapter.AnimeViewHolder>(AnimeStatusDiffCallback()) {
+class AnimeStatusAdapter(private val onItemClick: (AnimeStatusDataWithDetailsPlanToWatch) -> Unit) : ListAdapter<AnimeStatusDataWithDetailsPlanToWatch, AnimeStatusAdapter.AnimeViewHolder>(AnimeStatusDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AnimeViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.library_card_view, parent, false)
@@ -21,6 +21,11 @@ class AnimeStatusAdapter : ListAdapter<AnimeStatusDataWithDetailsPlanToWatch, An
 
     override fun onBindViewHolder(holder: AnimeViewHolder, position: Int) {
         holder.bind(getItem(position))
+        val anime = getItem(position)
+
+        holder.itemView.setOnClickListener {
+            onItemClick(anime)
+        }
     }
 
     class AnimeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

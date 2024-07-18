@@ -1,5 +1,6 @@
 package com.example.anivault.ui.home.animelibrarylayouts
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.anivault.R
 import com.example.anivault.ui.adapters.AnimeStatusAdapterCompleted
+import com.example.anivault.ui.home.animepage.AnimeScreen
 import com.example.anivault.ui.viewmodel.CompletedViewModel
 import com.example.anivault.ui.viewmodelfactory.LibraryViewModelFactory
 import org.kodein.di.KodeinAware
@@ -41,15 +43,24 @@ class Completed : Fragment(), KodeinAware {
 
         recyclerView = view.findViewById(R.id.recycleViewCompletedLibrary)
         totalAnimeText = view.findViewById(R.id.completed_total_anime_text)
-
+        adapter = AnimeStatusAdapterCompleted { anime ->
+            val intent = Intent(requireContext(), AnimeScreen::class.java)
+            intent.putExtra("animeId", anime.statusData.mal_id)
+            startActivity(intent)
+        }
         setupRecyclerView()
         observeViewModel()
+
 
         viewModel.loadPlanToWatchAnime()
     }
 
     private fun setupRecyclerView() {
-        adapter = AnimeStatusAdapterCompleted()
+        adapter = AnimeStatusAdapterCompleted{anime ->
+            val intent = Intent(requireContext(), AnimeScreen::class.java)
+            intent.putExtra("animeId", anime.statusData.mal_id)
+            startActivity(intent)
+        }
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
     }
