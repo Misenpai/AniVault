@@ -58,7 +58,7 @@
                 android:paddingLeft="8dp">
 
                 <TextView
-                    android:id="@+id/search_anime_name"
+                    android:id="@+id/search_anime_name_library"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="4dp"
