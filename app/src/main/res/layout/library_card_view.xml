@@ -176,7 +176,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    app:srcCompat="@drawable/library_edit_icon" />
+                    app:srcCompat="@drawable/library_delete_icon" />
 
                 <ImageView
                     android:id="@+id/modify_anime_count"

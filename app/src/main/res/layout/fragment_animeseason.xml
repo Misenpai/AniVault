@@ -40,7 +40,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/japanbento"
                 android:gravity="center"
-                android:paddingRight="35dp"
+                android:paddingRight="70dp"
                 android:text="AniWave"
                 android:textColor="@color/white"
                 android:textSize="24sp" />
