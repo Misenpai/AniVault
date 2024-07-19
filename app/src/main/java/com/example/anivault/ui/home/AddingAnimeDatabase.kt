@@ -174,7 +174,7 @@ class AddingAnimeDatabase : AppCompatActivity() {
                 status = status
             )
 
-            viewModel.saveAnimeStatus(animeStatusData)
+            viewModel.saveOrUpdateAnimeStatus(animeStatusData)
         }
     }
 

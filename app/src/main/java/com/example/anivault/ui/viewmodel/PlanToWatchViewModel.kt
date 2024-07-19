@@ -18,8 +18,8 @@ class PlanToWatchViewModel(
     private val jikanApiService: JikanApiService
 ) : ViewModel() {
 
-    private val _animeList = MutableLiveData<List<AnimeStatusDataWithDetailsPlanToWatch>>()
-    val animeList: LiveData<List<AnimeStatusDataWithDetailsPlanToWatch>> = _animeList
+    private val _animeList = MutableLiveData<List<AnimeStatusDataWithDetails>>()
+    val animeList: LiveData<List<AnimeStatusDataWithDetails>> = _animeList
 
     fun loadPlanToWatchAnime() {
         viewModelScope.launch {
@@ -35,7 +35,7 @@ class PlanToWatchViewModel(
                                     val animeList = response.body()?.animes ?: emptyList()
                                     val animeListWithDetails = animeList.map { anime ->
                                         val details = jikanApiService.getAnimeDetails(anime.mal_id).data
-                                        AnimeStatusDataWithDetailsPlanToWatch(anime, details)
+                                        AnimeStatusDataWithDetails(anime, details)
                                     }
                                     _animeList.value = animeListWithDetails
                                 }
@@ -52,7 +52,7 @@ class PlanToWatchViewModel(
     }
 }
 
-data class AnimeStatusDataWithDetailsPlanToWatch(
+data class AnimeStatusDataWithDetails(
     val statusData: AnimeStatusData,
     val details: AnimeDetails
 )

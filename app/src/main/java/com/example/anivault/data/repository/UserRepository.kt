@@ -11,7 +11,10 @@ import com.example.anivault.data.network.MyApi
 import com.example.anivault.data.network.SafeApiRequest
 import com.example.anivault.data.network.response.AnimeStatusData
 import com.example.anivault.data.network.response.AnimeStatusListResponse
+import com.example.anivault.data.network.response.AnimeStatusUpdateData
 import com.example.anivault.data.network.response.MessageResponse
+import com.example.anivault.data.network.response.MessageResponseUpdate
+import retrofit2.Response
 import toUser
 
 class UserRepository(
@@ -59,12 +62,14 @@ class UserRepository(
         return db.getUserDao().getAllUsers()
     }
 
-    suspend fun insertAnimeStatus(data: AnimeStatusData): MessageResponse {
-        return apiRequest { api.insertAnimeStatus(data) }
+    suspend fun insertAnimeStatus(data: AnimeStatusData): Response<MessageResponse> {
+        return api.insertAnimeStatus(data)
     }
 
-    suspend fun updateAnimeStatus(data: AnimeStatusData): MessageResponse {
-        return apiRequest { api.updateAnimeStatus(data) }
+    suspend fun updateAnimeStatus(data: AnimeStatusUpdateData): Response<MessageResponseUpdate> {
+        val response = api.updateAnimeStatus(data)
+        Log.e("UpdateResponse", "Update response: ${response.code()} - ${response.message()}")
+        return response
     }
 
     suspend fun removeAnimeStatus(userId: Int, malId: Int): MessageResponse {

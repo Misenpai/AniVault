@@ -3,7 +3,9 @@ package com.example.anivault.data.network
 import AuthResponse
 import com.example.anivault.data.network.response.AnimeStatusData
 import com.example.anivault.data.network.response.AnimeStatusListResponse
+import com.example.anivault.data.network.response.AnimeStatusUpdateData
 import com.example.anivault.data.network.response.MessageResponse
+import com.example.anivault.data.network.response.MessageResponseUpdate
 import okhttp3.OkHttpClient
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -39,7 +41,7 @@ interface MyApi {
     suspend fun insertAnimeStatus(@Body data: AnimeStatusData): Response<MessageResponse>
 
     @PUT("/user/anime/status")
-    suspend fun updateAnimeStatus(@Body data: AnimeStatusData): Response<MessageResponse>
+    suspend fun updateAnimeStatus(@Body data: AnimeStatusUpdateData): Response<MessageResponseUpdate>
 
     @DELETE("/user/anime/status/{userId}/{malId}")
     suspend fun removeAnimeStatus(
@@ -52,6 +54,7 @@ interface MyApi {
         @Path("userId") userId: Int,
         @Path("status") status: String
     ): Response<AnimeStatusListResponse>
+
 
     companion object{
             operator fun invoke(

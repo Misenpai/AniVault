@@ -10,9 +10,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.anivault.R
-import com.example.anivault.ui.viewmodel.AnimeStatusDataWithDetailsPlanToWatch
+import com.example.anivault.ui.viewmodel.AnimeStatusDataWithDetails
 
-class AnimeStatusAdapter(private val onItemClick: (AnimeStatusDataWithDetailsPlanToWatch) -> Unit) : ListAdapter<AnimeStatusDataWithDetailsPlanToWatch, AnimeStatusAdapter.AnimeViewHolder>(AnimeStatusDiffCallback()) {
+
+class AnimeStatusAdapter(private val onItemClick: (AnimeStatusDataWithDetails) -> Unit) : ListAdapter<AnimeStatusDataWithDetails, AnimeStatusAdapter.AnimeViewHolder>(AnimeStatusDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AnimeViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.library_card_view, parent, false)
@@ -37,7 +38,7 @@ class AnimeStatusAdapter(private val onItemClick: (AnimeStatusDataWithDetailsPla
         private val searchSeason: TextView = itemView.findViewById(R.id.search_season)
         private val searchYear: TextView = itemView.findViewById(R.id.search_year)
 
-        fun bind(item: AnimeStatusDataWithDetailsPlanToWatch) {
+        fun bind(item: AnimeStatusDataWithDetails) {
             val anime = item.statusData
             val details = item.details
 
@@ -56,12 +57,12 @@ class AnimeStatusAdapter(private val onItemClick: (AnimeStatusDataWithDetailsPla
     }
 }
 
-class AnimeStatusDiffCallback : DiffUtil.ItemCallback<AnimeStatusDataWithDetailsPlanToWatch>() {
-    override fun areItemsTheSame(oldItem: AnimeStatusDataWithDetailsPlanToWatch, newItem: AnimeStatusDataWithDetailsPlanToWatch): Boolean {
+class AnimeStatusDiffCallback : DiffUtil.ItemCallback<AnimeStatusDataWithDetails>() {
+    override fun areItemsTheSame(oldItem: AnimeStatusDataWithDetails, newItem: AnimeStatusDataWithDetails): Boolean {
         return oldItem.statusData.mal_id == newItem.statusData.mal_id
     }
 
-    override fun areContentsTheSame(oldItem: AnimeStatusDataWithDetailsPlanToWatch, newItem: AnimeStatusDataWithDetailsPlanToWatch): Boolean {
+    override fun areContentsTheSame(oldItem: AnimeStatusDataWithDetails, newItem: AnimeStatusDataWithDetails): Boolean {
         return oldItem == newItem
     }
 }

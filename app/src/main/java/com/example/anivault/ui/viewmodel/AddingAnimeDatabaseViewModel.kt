@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.anivault.data.db.Entities.User
 import com.example.anivault.data.network.response.AnimeStatusData
+import com.example.anivault.data.network.response.AnimeStatusUpdateData
 import com.example.anivault.data.repository.UserRepository
 import kotlinx.coroutines.launch
 
@@ -29,16 +30,36 @@ class AddingAnimeDatabaseViewModel(private val repository: UserRepository) : Vie
         return currentUser.value?.id
     }
 
-    fun saveAnimeStatus(data: AnimeStatusData) {
+
+    fun saveOrUpdateAnimeStatus(data: AnimeStatusData) {
         viewModelScope.launch {
             try {
-                val response = repository.insertAnimeStatus(data)
-                _saveResult.value = Result.Success(response.message)
+                val updateData = AnimeStatusUpdateData(
+                    status = data.status,
+                    mal_id = data.mal_id,
+                    user_id = data.user_id,
+                    total_watched_episodes = data.total_watched_episodes
+                )
+                val response = repository.updateAnimeStatus(updateData)
+                if (response.isSuccessful) {
+                    _saveResult.value = Result.Success(response.body()?.message ?: "Update successful")
+                } else if (response.code() == 404) {
+                    // If update fails because the record doesn't exist, try to insert
+                    val insertResponse = repository.insertAnimeStatus(data)
+                    if (insertResponse.isSuccessful) {
+                        _saveResult.value = Result.Success(insertResponse.body()?.message ?: "Insert successful")
+                    } else {
+                        _saveResult.value = Result.Error(Exception("Failed to insert: ${insertResponse.errorBody()?.string()}"))
+                    }
+                } else {
+                    _saveResult.value = Result.Error(Exception("Update failed: ${response.errorBody()?.string()}"))
+                }
             } catch (e: Exception) {
                 _saveResult.value = Result.Error(e)
             }
         }
     }
+
 }
 
 sealed class Result<out T> {
