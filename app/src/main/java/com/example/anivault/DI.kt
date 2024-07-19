@@ -24,6 +24,6 @@ val appModule = Kodein.Module("appModule") {
     bind<AnimeViewModelFactory>() with provider { AnimeViewModelFactory(instance()) }
 
     bind<LibraryViewModelFactory>() with provider {
-        LibraryViewModelFactory(instance(), instance(), instance())
+        LibraryViewModelFactory(instance(), instance(), instance(),instance())
     }
 }

@@ -1,5 +1,6 @@
 package com.example.anivault.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -34,12 +35,15 @@ class AddingAnimeDatabaseViewModel(private val repository: UserRepository) : Vie
     fun saveOrUpdateAnimeStatus(data: AnimeStatusData) {
         viewModelScope.launch {
             try {
+                Log.d("UpdateAnime", "UpdateData: ${data.user_id}")
                 val updateData = AnimeStatusUpdateData(
                     status = data.status,
                     mal_id = data.mal_id,
                     user_id = data.user_id,
                     total_watched_episodes = data.total_watched_episodes
                 )
+
+                Log.d("UpdateAnime", "UpdateData: $updateData")
                 val response = repository.updateAnimeStatus(updateData)
                 if (response.isSuccessful) {
                     _saveResult.value = Result.Success(response.body()?.message ?: "Update successful")

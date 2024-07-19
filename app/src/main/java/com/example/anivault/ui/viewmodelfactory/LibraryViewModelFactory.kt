@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.anivault.data.db.AppDatabase
 import com.example.anivault.data.network.JikanApiService
 import com.example.anivault.data.network.MyApi
+import com.example.anivault.data.repository.UserRepository
 import com.example.anivault.ui.viewmodel.CompletedViewModel
 import com.example.anivault.ui.viewmodel.DroppedViewModel
 import com.example.anivault.ui.viewmodel.PlanToWatchViewModel
@@ -13,7 +14,8 @@ import com.example.anivault.ui.viewmodel.WatchingViewModel
 class LibraryViewModelFactory(
     private val api: MyApi,
     private val db: AppDatabase,
-    private val jikanApiService: JikanApiService
+    private val jikanApiService: JikanApiService,
+    private val repository: UserRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(PlanToWatchViewModel::class.java)) {
@@ -30,7 +32,7 @@ class LibraryViewModelFactory(
         }
         else if (modelClass.isAssignableFrom(WatchingViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return WatchingViewModel(api, db,jikanApiService) as T
+            return WatchingViewModel(api, db,jikanApiService,repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

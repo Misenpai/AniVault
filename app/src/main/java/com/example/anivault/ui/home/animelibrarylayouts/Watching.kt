@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.anivault.R
 import com.example.anivault.ui.adapters.AnimeStatusAdapterWatching
 import com.example.anivault.ui.home.animepage.AnimeScreen
+import com.example.anivault.ui.viewmodel.ResultWatching
 import com.example.anivault.ui.viewmodel.WatchingViewModel
 import com.example.anivault.ui.viewmodelfactory.LibraryViewModelFactory
 import org.kodein.di.KodeinAware
@@ -27,6 +29,8 @@ class Watching : Fragment(), KodeinAware {
     private lateinit var adapter: AnimeStatusAdapterWatching
     private lateinit var recyclerView: RecyclerView
     private lateinit var totalAnimeText: TextView
+
+    private var currentUserId: Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,24 +47,44 @@ class Watching : Fragment(), KodeinAware {
 
         recyclerView = view.findViewById(R.id.recycleViewWatchingLibrary)
         totalAnimeText = view.findViewById(R.id.watching_total_anime_text)
-        adapter = AnimeStatusAdapterWatching{anime ->
-            val intent = Intent(requireContext(), AnimeScreen::class.java)
-            intent.putExtra("animeId", anime.statusData.mal_id)
-            startActivity(intent)
+
+        viewModel.currentUserId.observe(viewLifecycleOwner) { userId ->
+            currentUserId = userId
         }
+
+        adapter = AnimeStatusAdapterWatching(
+            onItemClick = { anime ->
+                val intent = Intent(requireContext(), AnimeScreen::class.java)
+                intent.putExtra("animeId", anime.statusData.mal_id)
+                startActivity(intent)
+            },
+            onModifyClick = { anime ->
+                currentUserId?.let { userId ->
+                    viewModel.updateWatchedEpisodes(anime, userId)
+                } ?: run {
+                    Toast.makeText(context, "User ID not available", Toast.LENGTH_SHORT).show()
+                }
+            }
+        )
+
         setupRecyclerView()
         observeViewModel()
 
+        viewModel.loadWatchingAnime()
 
-        viewModel.loadPlanToWatchAnime()
+        viewModel.updateResult.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is ResultWatching.Success -> {
+                    Toast.makeText(context, result.data, Toast.LENGTH_SHORT).show()
+                }
+                is ResultWatching.Error -> {
+                    Toast.makeText(context, "Error: ${result.exception.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     private fun setupRecyclerView() {
-        adapter = AnimeStatusAdapterWatching{anime ->
-            val intent = Intent(requireContext(), AnimeScreen::class.java)
-            intent.putExtra("animeId", anime.statusData.mal_id)
-            startActivity(intent)
-        }
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
     }

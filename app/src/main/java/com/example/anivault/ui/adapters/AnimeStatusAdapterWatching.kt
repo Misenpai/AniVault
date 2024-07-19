@@ -12,7 +12,9 @@ import com.bumptech.glide.Glide
 import com.example.anivault.R
 import com.example.anivault.ui.viewmodel.AnimeStatusDataWithDetailsWatching
 
-class AnimeStatusAdapterWatching(private val onItemClick: (AnimeStatusDataWithDetailsWatching) -> Unit) : ListAdapter<AnimeStatusDataWithDetailsWatching, AnimeStatusAdapterWatching.AnimeViewHolderWatching>(AnimeStatusDiffCallbackWatching()) {
+class AnimeStatusAdapterWatching(private val onItemClick: (AnimeStatusDataWithDetailsWatching) -> Unit,
+                                 private val onModifyClick: (AnimeStatusDataWithDetailsWatching) -> Unit)
+    : ListAdapter<AnimeStatusDataWithDetailsWatching, AnimeStatusAdapterWatching.AnimeViewHolderWatching>(AnimeStatusDiffCallbackWatching()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AnimeViewHolderWatching {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.library_card_view, parent, false)
@@ -26,6 +28,11 @@ class AnimeStatusAdapterWatching(private val onItemClick: (AnimeStatusDataWithDe
         holder.itemView.setOnClickListener {
             onItemClick(anime)
         }
+
+        holder.modifyButton.setOnClickListener {
+            onModifyClick(anime)
+        }
+
     }
 
     class AnimeViewHolderWatching(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -36,6 +43,7 @@ class AnimeStatusAdapterWatching(private val onItemClick: (AnimeStatusDataWithDe
         private val searchType: TextView = itemView.findViewById(R.id.search_type)
         private val searchSeason: TextView = itemView.findViewById(R.id.search_season)
         private val searchYear: TextView = itemView.findViewById(R.id.search_year)
+        val modifyButton: ImageView = itemView.findViewById(R.id.modify_anime_count)
 
         fun bind(item: AnimeStatusDataWithDetailsWatching) {
             val anime = item.statusData
