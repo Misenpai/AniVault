@@ -13,7 +13,9 @@ import com.example.anivault.R
 import com.example.anivault.ui.viewmodel.AnimeStatusDataWithDetails
 
 
-class AnimeStatusAdapter(private val onItemClick: (AnimeStatusDataWithDetails) -> Unit) : ListAdapter<AnimeStatusDataWithDetails, AnimeStatusAdapter.AnimeViewHolder>(AnimeStatusDiffCallback()) {
+class AnimeStatusAdapter(private val onItemClick: (AnimeStatusDataWithDetails) -> Unit,
+                         private val onModifyClick: (AnimeStatusDataWithDetails) -> Unit,
+                         private val onDeleteClick: (AnimeStatusDataWithDetails) -> Unit) : ListAdapter<AnimeStatusDataWithDetails, AnimeStatusAdapter.AnimeViewHolder>(AnimeStatusDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AnimeViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.library_card_view, parent, false)
@@ -27,6 +29,14 @@ class AnimeStatusAdapter(private val onItemClick: (AnimeStatusDataWithDetails) -
         holder.itemView.setOnClickListener {
             onItemClick(anime)
         }
+
+        holder.modifyButton.setOnClickListener {
+            onModifyClick(anime)
+        }
+
+        holder.deleteButton.setOnClickListener {
+            onDeleteClick(anime)
+        }
     }
 
     class AnimeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -37,6 +47,8 @@ class AnimeStatusAdapter(private val onItemClick: (AnimeStatusDataWithDetails) -
         private val searchType: TextView = itemView.findViewById(R.id.search_type)
         private val searchSeason: TextView = itemView.findViewById(R.id.search_season)
         private val searchYear: TextView = itemView.findViewById(R.id.search_year)
+        val modifyButton: ImageView = itemView.findViewById(R.id.modify_anime_count)
+        val deleteButton: ImageView = itemView.findViewById(R.id.edit_anime_record)
 
         fun bind(item: AnimeStatusDataWithDetails) {
             val anime = item.statusData

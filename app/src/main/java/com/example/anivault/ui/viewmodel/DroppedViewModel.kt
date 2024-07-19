@@ -10,16 +10,95 @@ import com.example.anivault.data.network.JikanApiService
 import com.example.anivault.data.network.MyApi
 import com.example.anivault.data.network.response.AnimeDetails
 import com.example.anivault.data.network.response.AnimeStatusData
+import com.example.anivault.data.network.response.AnimeStatusUpdateData
+import com.example.anivault.data.repository.UserRepository
 import kotlinx.coroutines.launch
 
 class DroppedViewModel(
     private val api: MyApi,
     private val db: AppDatabase,
-    private val jikanApiService: JikanApiService
+    private val jikanApiService: JikanApiService,
+    private val repository: UserRepository
 ) : ViewModel() {
 
     private val _animeList = MutableLiveData<List<AnimeStatusDataWithDetailsDropped>>()
     val animeList: LiveData<List<AnimeStatusDataWithDetailsDropped>> = _animeList
+
+    private val _updateResult = MutableLiveData<ResultDropped<String>>()
+    val updateResult: LiveData<ResultDropped<String>> = _updateResult
+
+    private val _currentUserId = MutableLiveData<Int>()
+    val currentUserId: LiveData<Int> = _currentUserId
+
+    private val _deleteResult = MutableLiveData<ResultDropped<String>>()
+    val deleteResult: LiveData<ResultDropped<String>> = _deleteResult
+
+    init {
+        viewModelScope.launch {
+            db.getUserDao().getAnyUser().observeForever { user ->
+                user?.let {
+                    _currentUserId.value = it.id!!
+                }
+            }
+        }
+    }
+
+    fun updateWatchedEpisodes(anime: AnimeStatusDataWithDetailsDropped, userId: Int) {
+        viewModelScope.launch {
+            try {
+                val currentEpisodes = anime.statusData.total_watched_episodes
+                val totalEpisodes = anime.statusData.total_episodes
+                Log.d("UpdateAnime", "UpdateData: $userId")
+
+                if (currentEpisodes < totalEpisodes) {
+                    val updatedEpisodes = currentEpisodes + 1
+                    val updateData = AnimeStatusUpdateData(
+                        status = "Currently Watching",
+                        mal_id = anime.statusData.mal_id,
+                        user_id = userId,
+                        total_watched_episodes = updatedEpisodes
+                    )
+
+                    Log.d("UpdateAnime", "UpdateData: $updateData")
+
+                    val response = repository.updateAnimeStatus(updateData)
+                    Log.d("UpdateAnime", "UpdateData: {${response.body()}}")
+                    if (response.isSuccessful) {
+                        _updateResult.value = ResultDropped.Success(response.body()?.message ?: "Update successful")
+                        Log.d("UpdateAnime", "Update successful")
+                        loadPlanToWatchAnime()  // Refresh the list after successful update
+                    } else {
+                        val errorMessage = response.errorBody()?.string()
+                        _updateResult.value = ResultDropped.Error(Exception("Update failed: $errorMessage"))
+                        Log.e("UpdateAnime", "Update failed: $errorMessage")
+                    }
+                } else {
+                    _updateResult.value = ResultDropped.Error(Exception("Cannot update: Already completed"))
+                    Log.e("UpdateAnime", "Cannot update: Already completed")
+                }
+            } catch (e: Exception) {
+                _updateResult.value = ResultDropped.Error(e)
+                Log.e("UpdateAnime", "Exception during update", e)
+            }
+        }
+    }
+
+    fun deleteAnimeStatus(animeId: Int, userId: Int) {
+        viewModelScope.launch {
+            try {
+                val response = repository.removeAnimeStatus(userId, animeId)
+                if (response.isSuccessful) {
+                    _deleteResult.value = ResultDropped.Success(response.body()?.message ?: "Delete successful")
+                    loadPlanToWatchAnime()  // Refresh the list after successful deletion
+                } else {
+                    val errorMessage = response.errorBody()?.string()
+                    _deleteResult.value = ResultDropped.Error(Exception("Delete failed: $errorMessage"))
+                }
+            } catch (e: Exception) {
+                _deleteResult.value = ResultDropped.Error(e)
+            }
+        }
+    }
 
     fun loadPlanToWatchAnime() {
         viewModelScope.launch {
@@ -50,6 +129,11 @@ class DroppedViewModel(
             }
         }
     }
+}
+
+sealed class ResultDropped<out T> {
+    data class Success<out T>(val data: T) : ResultDropped<T>()
+    data class Error(val exception: Exception) : ResultDropped<Nothing>()
 }
 
 data class AnimeStatusDataWithDetailsDropped(

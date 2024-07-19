@@ -12,7 +12,10 @@ import com.bumptech.glide.Glide
 import com.example.anivault.R
 import com.example.anivault.ui.viewmodel.AnimeStatusDataWithDetailsCompleted
 
-class AnimeStatusAdapterCompleted(private val onItemClick: (AnimeStatusDataWithDetailsCompleted) -> Unit) : ListAdapter<AnimeStatusDataWithDetailsCompleted, AnimeStatusAdapterCompleted.AnimeViewHolderCompleted>(AnimeStatusDiffCallbackCompleted()) {
+class AnimeStatusAdapterCompleted(private val onItemClick: (AnimeStatusDataWithDetailsCompleted) -> Unit,
+                                  private val onModifyClick: (AnimeStatusDataWithDetailsCompleted) -> Unit,
+                                  private val onDeleteClick: (AnimeStatusDataWithDetailsCompleted) -> Unit)
+    : ListAdapter<AnimeStatusDataWithDetailsCompleted, AnimeStatusAdapterCompleted.AnimeViewHolderCompleted>(AnimeStatusDiffCallbackCompleted()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AnimeViewHolderCompleted {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.library_card_view, parent, false)
@@ -26,6 +29,14 @@ class AnimeStatusAdapterCompleted(private val onItemClick: (AnimeStatusDataWithD
         holder.itemView.setOnClickListener {
             onItemClick(anime)
         }
+
+        holder.modifyButton.setOnClickListener {
+            onModifyClick(anime)
+        }
+
+        holder.deleteButton.setOnClickListener {
+            onDeleteClick(anime)
+        }
     }
 
     class AnimeViewHolderCompleted(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -36,6 +47,8 @@ class AnimeStatusAdapterCompleted(private val onItemClick: (AnimeStatusDataWithD
         private val searchType: TextView = itemView.findViewById(R.id.search_type)
         private val searchSeason: TextView = itemView.findViewById(R.id.search_season)
         private val searchYear: TextView = itemView.findViewById(R.id.search_year)
+        val modifyButton: ImageView = itemView.findViewById(R.id.modify_anime_count)
+        val deleteButton: ImageView = itemView.findViewById(R.id.edit_anime_record)
 
         fun bind(item: AnimeStatusDataWithDetailsCompleted) {
             val anime = item.statusData

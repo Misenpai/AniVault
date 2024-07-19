@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,6 +29,8 @@ class Completed : Fragment(), KodeinAware {
     private lateinit var recyclerView: RecyclerView
     private lateinit var totalAnimeText: TextView
 
+    private var currentUserId: Int? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -43,11 +46,32 @@ class Completed : Fragment(), KodeinAware {
 
         recyclerView = view.findViewById(R.id.recycleViewCompletedLibrary)
         totalAnimeText = view.findViewById(R.id.completed_total_anime_text)
-        adapter = AnimeStatusAdapterCompleted { anime ->
-            val intent = Intent(requireContext(), AnimeScreen::class.java)
-            intent.putExtra("animeId", anime.statusData.mal_id)
-            startActivity(intent)
+
+        viewModel.currentUserId.observe(viewLifecycleOwner) { userId ->
+            currentUserId = userId
         }
+
+        adapter = AnimeStatusAdapterCompleted (
+            onItemClick = { anime ->
+                val intent = Intent(requireContext(), AnimeScreen::class.java)
+                intent.putExtra("animeId", anime.statusData.mal_id)
+                startActivity(intent)
+            },
+            onModifyClick = { anime ->
+                viewModel.currentUserId.value?.let { userId ->
+                    viewModel.updateWatchedEpisodes(anime, userId)
+                } ?: run {
+                    Toast.makeText(context, "User ID not available", Toast.LENGTH_SHORT).show()
+                }
+            },
+            onDeleteClick = { anime ->  // Add this block
+                viewModel.currentUserId.value?.let { userId ->
+                    viewModel.deleteAnimeStatus(anime.statusData.mal_id, userId)
+                } ?: run {
+                    Toast.makeText(context, "User ID not available", Toast.LENGTH_SHORT).show()
+                }
+            }
+        )
         setupRecyclerView()
         observeViewModel()
 
@@ -56,11 +80,27 @@ class Completed : Fragment(), KodeinAware {
     }
 
     private fun setupRecyclerView() {
-        adapter = AnimeStatusAdapterCompleted{anime ->
-            val intent = Intent(requireContext(), AnimeScreen::class.java)
-            intent.putExtra("animeId", anime.statusData.mal_id)
-            startActivity(intent)
-        }
+        adapter = AnimeStatusAdapterCompleted(
+            onItemClick = { anime ->
+                val intent = Intent(requireContext(), AnimeScreen::class.java)
+                intent.putExtra("animeId", anime.statusData.mal_id)
+                startActivity(intent)
+            },
+            onModifyClick = { anime ->
+                viewModel.currentUserId.value?.let { userId ->
+                    viewModel.updateWatchedEpisodes(anime, userId)
+                } ?: run {
+                    Toast.makeText(context, "User ID not available", Toast.LENGTH_SHORT).show()
+                }
+            },
+            onDeleteClick = { anime ->  // Add this block
+                viewModel.currentUserId.value?.let { userId ->
+                    viewModel.deleteAnimeStatus(anime.statusData.mal_id, userId)
+                } ?: run {
+                    Toast.makeText(context, "User ID not available", Toast.LENGTH_SHORT).show()
+                }
+            }
+        )
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
     }

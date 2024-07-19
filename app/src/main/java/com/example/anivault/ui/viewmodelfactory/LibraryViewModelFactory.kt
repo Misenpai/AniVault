@@ -20,15 +20,15 @@ class LibraryViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(PlanToWatchViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return PlanToWatchViewModel(api, db, jikanApiService) as T
+            return PlanToWatchViewModel(api, db, jikanApiService,repository) as T
         }
         else if (modelClass.isAssignableFrom(CompletedViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return CompletedViewModel(api, db,jikanApiService) as T
+            return CompletedViewModel(api, db,jikanApiService,repository) as T
         }
         else if (modelClass.isAssignableFrom(DroppedViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return DroppedViewModel(api, db,jikanApiService) as T
+            return DroppedViewModel(api, db,jikanApiService,repository) as T
         }
         else if (modelClass.isAssignableFrom(WatchingViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

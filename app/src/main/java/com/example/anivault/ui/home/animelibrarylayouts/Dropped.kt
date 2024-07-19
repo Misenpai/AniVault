@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,6 +15,7 @@ import com.example.anivault.R
 import com.example.anivault.ui.adapters.AnimeStatusAdapterDropped
 import com.example.anivault.ui.home.animepage.AnimeScreen
 import com.example.anivault.ui.viewmodel.DroppedViewModel
+import com.example.anivault.ui.viewmodel.ResultDropped
 import com.example.anivault.ui.viewmodelfactory.LibraryViewModelFactory
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
@@ -27,6 +29,8 @@ class Dropped : Fragment(), KodeinAware {
     private lateinit var adapter: AnimeStatusAdapterDropped
     private lateinit var recyclerView: RecyclerView
     private lateinit var totalAnimeText: TextView
+
+    private var currentUserId: Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,24 +47,83 @@ class Dropped : Fragment(), KodeinAware {
 
         recyclerView = view.findViewById(R.id.recycleViewDroppedLibrary)
         totalAnimeText = view.findViewById(R.id.dropped_total_anime_text)
-        adapter = AnimeStatusAdapterDropped{ anime ->
-            val intent = Intent(requireContext(), AnimeScreen::class.java)
-            intent.putExtra("animeId", anime.statusData.mal_id)
-            startActivity(intent)
+
+        viewModel.currentUserId.observe(viewLifecycleOwner) { userId ->
+            currentUserId = userId
         }
+
+        adapter = AnimeStatusAdapterDropped(
+            onItemClick = { anime ->
+                val intent = Intent(requireContext(), AnimeScreen::class.java)
+                intent.putExtra("animeId", anime.statusData.mal_id)
+                startActivity(intent)
+            },
+            onModifyClick = { anime ->
+                viewModel.currentUserId.value?.let { userId ->
+                    viewModel.updateWatchedEpisodes(anime, userId)
+                } ?: run {
+                    Toast.makeText(context, "User ID not available", Toast.LENGTH_SHORT).show()
+                }
+            },
+            onDeleteClick = { anime ->  // Add this block
+                viewModel.currentUserId.value?.let { userId ->
+                    viewModel.deleteAnimeStatus(anime.statusData.mal_id, userId)
+                } ?: run {
+                    Toast.makeText(context, "User ID not available", Toast.LENGTH_SHORT).show()
+                }
+            }
+        )
         setupRecyclerView()
         observeViewModel()
 
 
         viewModel.loadPlanToWatchAnime()
+
+        viewModel.updateResult.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is ResultDropped.Success -> {
+                    Toast.makeText(context, result.data, Toast.LENGTH_SHORT).show()
+                }
+                is ResultDropped.Error -> {
+                    Toast.makeText(context, "Error: ${result.exception.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        viewModel.deleteResult.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is ResultDropped.Success -> {
+                    Toast.makeText(context, result.data, Toast.LENGTH_SHORT).show()
+                }
+                is ResultDropped.Error -> {
+                    Toast.makeText(context, "Error: ${result.exception.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
     }
 
     private fun setupRecyclerView() {
-        adapter = AnimeStatusAdapterDropped{ anime ->
-            val intent = Intent(requireContext(), AnimeScreen::class.java)
-            intent.putExtra("animeId", anime.statusData.mal_id)
-            startActivity(intent)
-        }
+        adapter = AnimeStatusAdapterDropped(
+            onItemClick = { anime ->
+                val intent = Intent(requireContext(), AnimeScreen::class.java)
+                intent.putExtra("animeId", anime.statusData.mal_id)
+                startActivity(intent)
+            },
+            onModifyClick = { anime ->
+                viewModel.currentUserId.value?.let { userId ->
+                    viewModel.updateWatchedEpisodes(anime, userId)
+                } ?: run {
+                    Toast.makeText(context, "User ID not available", Toast.LENGTH_SHORT).show()
+                }
+            },
+            onDeleteClick = { anime ->  // Add this block
+                viewModel.currentUserId.value?.let { userId ->
+                    viewModel.deleteAnimeStatus(anime.statusData.mal_id, userId)
+                } ?: run {
+                    Toast.makeText(context, "User ID not available", Toast.LENGTH_SHORT).show()
+                }
+            }
+        )
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
     }

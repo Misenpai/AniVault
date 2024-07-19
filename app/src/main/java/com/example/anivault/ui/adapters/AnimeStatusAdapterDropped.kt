@@ -12,7 +12,10 @@ import com.bumptech.glide.Glide
 import com.example.anivault.R
 import com.example.anivault.ui.viewmodel.AnimeStatusDataWithDetailsDropped
 
-class AnimeStatusAdapterDropped(private val onItemClick: (AnimeStatusDataWithDetailsDropped) -> Unit) : ListAdapter<AnimeStatusDataWithDetailsDropped, AnimeStatusAdapterDropped.AnimeViewHolderDropped>(AnimeStatusDiffCallbackDropped()) {
+class AnimeStatusAdapterDropped(private val onItemClick: (AnimeStatusDataWithDetailsDropped,) -> Unit,
+                                private val onModifyClick: (AnimeStatusDataWithDetailsDropped) -> Unit,
+                                private val onDeleteClick: (AnimeStatusDataWithDetailsDropped) -> Unit)
+    : ListAdapter<AnimeStatusDataWithDetailsDropped, AnimeStatusAdapterDropped.AnimeViewHolderDropped>(AnimeStatusDiffCallbackDropped()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AnimeViewHolderDropped {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.library_card_view, parent, false)
@@ -27,6 +30,14 @@ class AnimeStatusAdapterDropped(private val onItemClick: (AnimeStatusDataWithDet
         holder.itemView.setOnClickListener {
             onItemClick(anime)
         }
+
+        holder.modifyButton.setOnClickListener {
+            onModifyClick(anime)
+        }
+
+        holder.deleteButton.setOnClickListener {
+            onDeleteClick(anime)
+        }
     }
 
     class AnimeViewHolderDropped(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -37,6 +48,8 @@ class AnimeStatusAdapterDropped(private val onItemClick: (AnimeStatusDataWithDet
         private val searchType: TextView = itemView.findViewById(R.id.search_type)
         private val searchSeason: TextView = itemView.findViewById(R.id.search_season)
         private val searchYear: TextView = itemView.findViewById(R.id.search_year)
+        val modifyButton: ImageView = itemView.findViewById(R.id.modify_anime_count)
+        val deleteButton: ImageView = itemView.findViewById(R.id.edit_anime_record)
 
         fun bind(item: AnimeStatusDataWithDetailsDropped) {
             val anime = item.statusData
