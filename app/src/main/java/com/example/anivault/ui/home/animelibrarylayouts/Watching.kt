@@ -59,8 +59,15 @@ class Watching : Fragment(), KodeinAware {
                 startActivity(intent)
             },
             onModifyClick = { anime ->
-                currentUserId?.let { userId ->
+                viewModel.currentUserId.value?.let { userId ->
                     viewModel.updateWatchedEpisodes(anime, userId)
+                } ?: run {
+                    Toast.makeText(context, "User ID not available", Toast.LENGTH_SHORT).show()
+                }
+            },
+            onDeleteClick = { anime ->  // Add this block
+                viewModel.currentUserId.value?.let { userId ->
+                    viewModel.deleteAnimeStatus(anime.statusData.mal_id, userId)
                 } ?: run {
                     Toast.makeText(context, "User ID not available", Toast.LENGTH_SHORT).show()
                 }
@@ -79,6 +86,17 @@ class Watching : Fragment(), KodeinAware {
                 }
                 is ResultWatching.Error -> {
                     Toast.makeText(context, "Error: ${result.exception.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        viewModel.deleteResult.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is ResultWatching.Success -> {
+                    Toast.makeText(context, result.data, Toast.LENGTH_SHORT).show()
+                }
+                is ResultWatching.Error -> {
+                    Toast.makeText(context, "Error: ${result.exception.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }

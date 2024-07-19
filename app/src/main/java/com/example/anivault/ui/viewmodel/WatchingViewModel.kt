@@ -30,6 +30,9 @@
         private val _currentUserId = MutableLiveData<Int>()
         val currentUserId: LiveData<Int> = _currentUserId
 
+        private val _deleteResult = MutableLiveData<ResultWatching<String>>()
+        val deleteResult: LiveData<ResultWatching<String>> = _deleteResult
+
         init {
             viewModelScope.launch {
                 db.getUserDao().getAnyUser().observeForever { user ->
@@ -49,8 +52,9 @@
 
                     if (currentEpisodes < totalEpisodes) {
                         val updatedEpisodes = currentEpisodes + 1
+                        val newStatus = if (updatedEpisodes == totalEpisodes) "Completed" else "Currently Watching"
                         val updateData = AnimeStatusUpdateData(
-                            status = anime.statusData.status ?: "Currently Watching",
+                            status = newStatus,
                             mal_id = anime.statusData.mal_id,
                             user_id = userId,
                             total_watched_episodes = updatedEpisodes
@@ -69,10 +73,30 @@
                             _updateResult.value = ResultWatching.Error(Exception("Update failed: $errorMessage"))
                             Log.e("UpdateAnime", "Update failed: $errorMessage")
                         }
+                    } else {
+                        _updateResult.value = ResultWatching.Error(Exception("Cannot update: Already completed"))
+                        Log.e("UpdateAnime", "Cannot update: Already completed")
                     }
                 } catch (e: Exception) {
                     _updateResult.value = ResultWatching.Error(e)
                     Log.e("UpdateAnime", "Exception during update", e)
+                }
+            }
+        }
+
+        fun deleteAnimeStatus(animeId: Int, userId: Int) {
+            viewModelScope.launch {
+                try {
+                    val response = repository.removeAnimeStatus(userId, animeId)
+                    if (response.isSuccessful) {
+                        _deleteResult.value = ResultWatching.Success(response.body()?.message ?: "Delete successful")
+                        loadWatchingAnime()  // Refresh the list after successful deletion
+                    } else {
+                        val errorMessage = response.errorBody()?.string()
+                        _deleteResult.value = ResultWatching.Error(Exception("Delete failed: $errorMessage"))
+                    }
+                } catch (e: Exception) {
+                    _deleteResult.value = ResultWatching.Error(e)
                 }
             }
         }

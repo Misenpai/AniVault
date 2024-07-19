@@ -72,8 +72,8 @@ class UserRepository(
         return response
     }
 
-    suspend fun removeAnimeStatus(userId: Int, malId: Int): MessageResponse {
-        return apiRequest { api.removeAnimeStatus(userId, malId) }
+    suspend fun removeAnimeStatus(userId: Int, malId: Int): Response<MessageResponse> {
+        return api.removeAnimeStatus(userId, malId)
     }
 
     suspend fun readAnimeStatus(userId: Int, status: String): AnimeStatusListResponse {

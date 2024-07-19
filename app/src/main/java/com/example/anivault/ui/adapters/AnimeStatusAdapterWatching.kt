@@ -13,7 +13,8 @@ import com.example.anivault.R
 import com.example.anivault.ui.viewmodel.AnimeStatusDataWithDetailsWatching
 
 class AnimeStatusAdapterWatching(private val onItemClick: (AnimeStatusDataWithDetailsWatching) -> Unit,
-                                 private val onModifyClick: (AnimeStatusDataWithDetailsWatching) -> Unit)
+                                 private val onModifyClick: (AnimeStatusDataWithDetailsWatching) -> Unit,
+                                 private val onDeleteClick: (AnimeStatusDataWithDetailsWatching) -> Unit)
     : ListAdapter<AnimeStatusDataWithDetailsWatching, AnimeStatusAdapterWatching.AnimeViewHolderWatching>(AnimeStatusDiffCallbackWatching()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AnimeViewHolderWatching {
@@ -33,6 +34,10 @@ class AnimeStatusAdapterWatching(private val onItemClick: (AnimeStatusDataWithDe
             onModifyClick(anime)
         }
 
+        holder.deleteButton.setOnClickListener {
+            onDeleteClick(anime)
+        }
+
     }
 
     class AnimeViewHolderWatching(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -44,6 +49,7 @@ class AnimeStatusAdapterWatching(private val onItemClick: (AnimeStatusDataWithDe
         private val searchSeason: TextView = itemView.findViewById(R.id.search_season)
         private val searchYear: TextView = itemView.findViewById(R.id.search_year)
         val modifyButton: ImageView = itemView.findViewById(R.id.modify_anime_count)
+        val deleteButton: ImageView = itemView.findViewById(R.id.edit_anime_record)
 
         fun bind(item: AnimeStatusDataWithDetailsWatching) {
             val anime = item.statusData
