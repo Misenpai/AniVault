@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -29,6 +30,7 @@ class Dropped : Fragment(), KodeinAware {
     private lateinit var adapter: AnimeStatusAdapterDropped
     private lateinit var recyclerView: RecyclerView
     private lateinit var totalAnimeText: TextView
+    private lateinit var loadingProgressBar: ProgressBar
 
     private var currentUserId: Int? = null
 
@@ -47,6 +49,7 @@ class Dropped : Fragment(), KodeinAware {
 
         recyclerView = view.findViewById(R.id.recycleViewDroppedLibrary)
         totalAnimeText = view.findViewById(R.id.dropped_total_anime_text)
+        loadingProgressBar = view.findViewById(R.id.loadingProgressBarDropped)
 
         viewModel.currentUserId.observe(viewLifecycleOwner) { userId ->
             currentUserId = userId
@@ -78,6 +81,16 @@ class Dropped : Fragment(), KodeinAware {
 
 
         viewModel.loadPlanToWatchAnime()
+
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            if (isLoading) {
+                // Show loading indicator
+                loadingProgressBar.visibility = View.VISIBLE
+            } else {
+                // Hide loading indicator
+                loadingProgressBar.visibility = View.GONE
+            }
+        }
 
         viewModel.updateResult.observe(viewLifecycleOwner) { result ->
             when (result) {

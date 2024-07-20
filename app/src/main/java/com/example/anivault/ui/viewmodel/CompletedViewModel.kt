@@ -12,6 +12,7 @@ import com.example.anivault.data.network.response.AnimeDetails
 import com.example.anivault.data.network.response.AnimeStatusData
 import com.example.anivault.data.network.response.AnimeStatusUpdateData
 import com.example.anivault.data.repository.UserRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class CompletedViewModel(
@@ -32,6 +33,10 @@ class CompletedViewModel(
 
     private val _deleteResult = MutableLiveData<ResultCompleted<String>>()
     val deleteResult: LiveData<ResultCompleted<String>> = _deleteResult
+
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
 
     init {
         viewModelScope.launch {
@@ -102,6 +107,7 @@ class CompletedViewModel(
 
     fun loadPlanToWatchAnime() {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 val userLiveData = db.getUserDao().getAnyUser()
                 userLiveData.observeForever { user ->
@@ -111,20 +117,40 @@ class CompletedViewModel(
                                 val response = api.readAnimeStatus(it.id!!, "Completed")
                                 if (response.isSuccessful) {
                                     val animeList = response.body()?.animes ?: emptyList()
-                                    val animeListWithDetails = animeList.map { anime ->
-                                        val details = jikanApiService.getAnimeDetails(anime.mal_id).data
-                                        AnimeStatusDataWithDetailsCompleted(anime, details)
+                                    val animeListWithDetails =
+                                        mutableListOf<AnimeStatusDataWithDetailsCompleted>()
+                                    animeList.map { anime ->
+                                        try {
+                                            val details =
+                                                jikanApiService.getAnimeDetails(anime.mal_id).data
+                                            animeListWithDetails.add(
+                                                AnimeStatusDataWithDetailsCompleted(
+                                                    anime,
+                                                    details
+                                                )
+                                            )
+                                            delay(1000) // Wait for 1 second between requests
+                                        } catch (e: Exception) {
+                                            Log.e(
+                                                "Completed",
+                                                "Error fetching details for anime ${anime.mal_id}",
+                                                e
+                                            )
+                                        }
                                     }
                                     _animeList.value = animeListWithDetails
                                 }
                             } catch (e: Exception) {
                                 Log.e("Completed", "Error fetching anime status", e)
+                            } finally {
+                                _isLoading.value = false
                             }
                         }
                     }
                 }
             } catch (e: Exception) {
                 Log.e("Completed", "Error loading user", e)
+                _isLoading.value = false
             }
         }
     }

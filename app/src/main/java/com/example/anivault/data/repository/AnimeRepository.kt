@@ -2,100 +2,218 @@
 
     import android.icu.util.Calendar
 import com.example.anivault.data.network.JikanApiService
-    import com.example.anivault.data.network.response.AnimeDetails
-    import com.example.anivault.data.network.response.AnimeRecommendationResponse
-import com.example.anivault.data.network.response.AnimeResponse
+import com.example.anivault.data.network.response.AnimeDetails
 import com.example.anivault.data.network.response.YearData
 import com.example.anivault.ui.dataclassess.Anime
 import com.example.anivault.ui.dataclassess.HorizontalAnime
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import retrofit2.HttpException
+import java.util.concurrent.TimeUnit
 
     class AnimeRepository(private val apiService: JikanApiService) {
+        private val requestSemaphore = Semaphore(1) // Allow only one request at a time
+        private val cache = mutableMapOf<String, CacheEntry>()
+        private val cacheTimeout = TimeUnit.MINUTES.toMillis(5) // 5 minutes cache timeout
 
-        fun getAnimeListCurrentSeason(): Flow<List<Anime>> = getAnimeList { page ->
-            apiService.getCurrentSeasonAnime(page)
-        }
+        private data class CacheEntry(val data: Any, val timestamp: Long)
 
-        fun getAnimeListPreviousSeason(): Flow<List<Anime>> {
-            val (prevSeason, prevYear) = getPreviousSeasonInfo()
-            return getAnimeList { page ->
-                apiService.getPreviousSeasonAnime(prevYear, prevSeason, page)
-            }
-        }
-
-        fun getAnimeListNextSeason(): Flow<List<Anime>> {
-            val (nextSeason, nextYear) = getNextSeasonInfo()
-            return getAnimeList { page ->
-                apiService.getNextSeasonAnime(nextYear, nextSeason, page)
-            }
-        }
-
-        fun getAnimeListNextSeasonSearch(): Flow<List<HorizontalAnime>> {
-            val (nextSeason, nextYear) = getNextSeasonInfo()
-            return getAnimeListHorizontal { page ->
-                apiService.getNextSeasonAnime(nextYear, nextSeason, page)
-            }
-        }
-
-        suspend fun getSeasons(): List<YearData> {
-            return apiService.getSeasons().data
-        }
-
-        fun getAnimeArchive(year: String, season: String): Flow<List<Anime>> = getAnimeList { page ->
-            apiService.getAnimeArchive(year, season, page)
-        }
-
-
-        fun getTopAiringAnime(): Flow<List<HorizontalAnime>> = getTopAiringAnimeList { filter ->
-            apiService.getTopAnimeAiring(filter, 1)
-        }
-
-        fun getTopAiringAnimeList(apiCall: suspend (String) -> AnimeResponse): Flow<List<HorizontalAnime>> = flow {
-            try {
-                val response = apiCall("airing")
-                val animeList = response.data.map { animeData ->
-                    HorizontalAnime(
-                        mal_id = animeData.mal_id,
-                        title = animeData.title,
-                        imageUrl = animeData.images.jpg.image_url
-                    )
+        private suspend fun <T> makeApiCall(key: String, apiCall: suspend () -> T): T {
+            // Check cache first
+            cache[key]?.let {
+                if (System.currentTimeMillis() - it.timestamp < cacheTimeout) {
+                    return it.data as T
                 }
-                emit(animeList)
-            } catch (e: Exception) {
-                throw e
+            }
+
+            return requestSemaphore.withPermit {
+                try {
+                    val result = apiCall()
+                    cache[key] = CacheEntry(result as Any, System.currentTimeMillis())
+                    result
+                } catch (e: HttpException) {
+                    if (e.code() == 429) {
+                        // Implement exponential backoff
+                        delay(5000) // Wait for 5 seconds before retrying
+                        makeApiCall(key, apiCall) // Retry the call
+                    } else {
+                        throw e
+                    }
+                }
             }
         }
 
-
-
-        private fun getAnimeList(apiCall: suspend (Int) -> AnimeResponse): Flow<List<Anime>> = flow {
+        fun getAnimeListCurrentSeason(): Flow<List<Anime>> = flow {
             var currentPage = 1
             var hasNextPage = true
 
             while (hasNextPage) {
-                try {
-                    val response = apiCall(currentPage)
-                    val animeList = response.data.map { animeData ->
-                        Anime(
-                            mal_id = animeData.mal_id,
-                            imageUrl = animeData.images.jpg.image_url,
-                            title = animeData.title,
-                            genres = animeData.genres.map { it.name }
-                        )
-                    }
-                    emit(animeList)
+                val response = makeApiCall("current_season_$currentPage") {
+                    apiService.getCurrentSeasonAnime(currentPage)
+                }
+                val animeList = response.data.map { animeData ->
+                    Anime(
+                        mal_id = animeData.mal_id,
+                        imageUrl = animeData.images.jpg.image_url,
+                        title = animeData.title,
+                        genres = animeData.genres.map { it.name }
+                    )
+                }
+                emit(animeList)
 
-                    hasNextPage = response.pagination.has_next_page
-                    currentPage++
-                    delay(5000) // Wait for 5 seconds before making the next request
-                } catch (e: HttpException) {
-                    hasNextPage = false
-                    throw e
+                hasNextPage = response.pagination.has_next_page
+                currentPage++
+                delay(1000) // Delay to respect rate limits
+            }
+        }
+
+        fun getAnimeListPreviousSeason(): Flow<List<Anime>> = flow {
+            val (prevSeason, prevYear) = getPreviousSeasonInfo()
+            var currentPage = 1
+            var hasNextPage = true
+
+            while (hasNextPage) {
+                val response = makeApiCall("previous_season_${prevYear}_${prevSeason}_$currentPage") {
+                    apiService.getPreviousSeasonAnime(prevYear, prevSeason, currentPage)
+                }
+                val animeList = response.data.map { animeData ->
+                    Anime(
+                        mal_id = animeData.mal_id,
+                        imageUrl = animeData.images.jpg.image_url,
+                        title = animeData.title,
+                        genres = animeData.genres.map { it.name }
+                    )
+                }
+                emit(animeList)
+
+                hasNextPage = response.pagination.has_next_page
+                currentPage++
+                delay(1000) // Delay to respect rate limits
+            }
+        }
+
+        fun getAnimeListNextSeason(): Flow<List<Anime>> = flow {
+            val (nextSeason, nextYear) = getNextSeasonInfo()
+            var currentPage = 1
+            var hasNextPage = true
+
+            while (hasNextPage) {
+                val response = makeApiCall("next_season_${nextYear}_${nextSeason}_$currentPage") {
+                    apiService.getNextSeasonAnime(nextYear, nextSeason, currentPage)
+                }
+                val animeList = response.data.map { animeData ->
+                    Anime(
+                        mal_id = animeData.mal_id,
+                        imageUrl = animeData.images.jpg.image_url,
+                        title = animeData.title,
+                        genres = animeData.genres.map { it.name }
+                    )
+                }
+                emit(animeList)
+
+                hasNextPage = response.pagination.has_next_page
+                currentPage++
+                delay(1000) // Delay to respect rate limits
+            }
+        }
+
+        fun getAnimeListNextSeasonSearch(): Flow<List<HorizontalAnime>> = flow {
+            val (nextSeason, nextYear) = getNextSeasonInfo()
+            val response = makeApiCall("next_season_search_${nextYear}_$nextSeason") {
+                apiService.getNextSeasonAnime(nextYear, nextSeason, 1)
+            }
+            val animeList = response.data.map { animeData ->
+                HorizontalAnime(
+                    mal_id = animeData.mal_id,
+                    title = animeData.title,
+                    imageUrl = animeData.images.jpg.image_url
+                )
+            }
+            emit(animeList)
+        }
+
+        suspend fun getSeasons(): List<YearData> {
+            return makeApiCall("seasons") {
+                apiService.getSeasons().data
+            }
+        }
+
+        fun getAnimeArchive(year: String, season: String): Flow<List<Anime>> = flow {
+            var currentPage = 1
+            var hasNextPage = true
+
+            while (hasNextPage) {
+                val response = makeApiCall("archive_${year}_${season}_$currentPage") {
+                    apiService.getAnimeArchive(year, season, currentPage)
+                }
+                val animeList = response.data.map { animeData ->
+                    Anime(
+                        mal_id = animeData.mal_id,
+                        imageUrl = animeData.images.jpg.image_url,
+                        title = animeData.title,
+                        genres = animeData.genres.map { it.name }
+                    )
+                }
+                emit(animeList)
+
+                hasNextPage = response.pagination.has_next_page
+                currentPage++
+                delay(1000) // Delay to respect rate limits
+            }
+        }
+
+        fun getTopAiringAnime(): Flow<List<HorizontalAnime>> = flow {
+            val response = makeApiCall("top_airing") {
+                apiService.getTopAnimeAiring("airing", 1)
+            }
+            val animeList = response.data.map { animeData ->
+                HorizontalAnime(
+                    mal_id = animeData.mal_id,
+                    title = animeData.title,
+                    imageUrl = animeData.images.jpg.image_url
+                )
+            }
+            emit(animeList)
+        }
+
+        fun getTopAnimeHorizontal(): Flow<List<HorizontalAnime>> = flow {
+            val response = makeApiCall("top_anime") {
+                apiService.getTopAnime(1)
+            }
+            val animeList = response.data.map { animeData ->
+                HorizontalAnime(
+                    mal_id = animeData.mal_id,
+                    title = animeData.title,
+                    imageUrl = animeData.images.jpg.image_url
+                )
+            }
+            emit(animeList)
+        }
+
+        fun getRecommendationAnimeHorizontal(): Flow<List<HorizontalAnime>> = flow {
+            val response = makeApiCall("recommendations") {
+                apiService.getRecommendationAnime(1)
+            }
+            val animeList = response.data.flatMap { recommendationEntry ->
+                recommendationEntry.entry.map { animeEntry ->
+                    HorizontalAnime(
+                        mal_id = animeEntry.mal_id,
+                        title = animeEntry.title,
+                        imageUrl = animeEntry.images.jpg.image_url
+                    )
                 }
             }
+            emit(animeList)
+        }
+
+        fun getAnimeDetailsFlow(animeId: Int): Flow<AnimeDetails> = flow {
+            val response = makeApiCall("anime_details_$animeId") {
+                apiService.getAnimeDetails(animeId)
+            }
+            emit(response.data)
         }
 
         private fun getPreviousSeasonInfo(): Pair<String, String> {
@@ -132,52 +250,4 @@ import retrofit2.HttpException
 
             return Pair(season, year)
         }
-
-        fun getAnimeListHorizontal(apiCall: suspend (Int) -> AnimeResponse): Flow<List<HorizontalAnime>> = flow {
-            try {
-                val response = apiCall(1)
-                val animeList = response.data.map { animeData ->
-                    HorizontalAnime(
-                        mal_id = animeData.mal_id,
-                        title = animeData.title,
-                        imageUrl = animeData.images.jpg.image_url
-                    )
-                }
-                emit(animeList)
-            } catch (e: Exception) {
-                throw e
-            }
-        }
-
-        fun getAnimeListHorizontalRecommendation(apiCall: suspend (Int) -> AnimeRecommendationResponse): Flow<List<HorizontalAnime>> = flow {
-            try {
-                val response = apiCall(1)
-                val animeList = response.data.flatMap { recommendationEntry ->
-                    recommendationEntry.entry.map { animeEntry ->
-                        HorizontalAnime(
-                            mal_id = animeEntry.mal_id,
-                            title = animeEntry.title,
-                            imageUrl = animeEntry.images.jpg.image_url
-                        )
-                    }
-                }
-                emit(animeList)
-            } catch (e: Exception) {
-                throw e
-            }
-        }
-
-        fun getTopAnimeHorizontal(): Flow<List<HorizontalAnime>> = getAnimeListHorizontal { page ->
-            apiService.getTopAnime(page)
-        }
-
-        fun getRecommendationAnimeHorizontal(): Flow<List<HorizontalAnime>> = getAnimeListHorizontalRecommendation { page ->
-            apiService.getRecommendationAnime(page)
-        }
-
-        fun getAnimeDetailsFlow(animeId: Int): Flow<AnimeDetails> = flow {
-            val response = apiService.getAnimeDetails(animeId)
-            emit(response.data)
-        }
-
     }

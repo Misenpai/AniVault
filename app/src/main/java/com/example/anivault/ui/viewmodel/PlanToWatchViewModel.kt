@@ -12,6 +12,7 @@ import com.example.anivault.data.network.response.AnimeDetails
 import com.example.anivault.data.network.response.AnimeStatusData
 import com.example.anivault.data.network.response.AnimeStatusUpdateData
 import com.example.anivault.data.repository.UserRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class PlanToWatchViewModel(
@@ -32,6 +33,9 @@ class PlanToWatchViewModel(
 
     private val _deleteResult = MutableLiveData<ResultPlanToWatch<String>>()
     val deleteResult: LiveData<ResultPlanToWatch<String>> = _deleteResult
+
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
 
     init {
         viewModelScope.launch {
@@ -104,6 +108,7 @@ class PlanToWatchViewModel(
 
     fun loadPlanToWatchAnime() {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 val userLiveData = db.getUserDao().getAnyUser()
 
@@ -114,20 +119,42 @@ class PlanToWatchViewModel(
                                 val response = api.readAnimeStatus(it.id!!, "Plan to Watch")
                                 if (response.isSuccessful) {
                                     val animeList = response.body()?.animes ?: emptyList()
-                                    val animeListWithDetails = animeList.map { anime ->
-                                        val details = jikanApiService.getAnimeDetails(anime.mal_id).data
-                                        AnimeStatusDataWithDetails(anime, details)
+                                    val animeListWithDetails =
+                                        mutableListOf<AnimeStatusDataWithDetails>()
+
+                                    animeList.forEach { anime ->
+                                        try {
+                                            val details =
+                                                jikanApiService.getAnimeDetails(anime.mal_id).data
+                                            animeListWithDetails.add(
+                                                AnimeStatusDataWithDetails(
+                                                    anime,
+                                                    details
+                                                )
+                                            )
+                                            delay(1000) // Wait for 1 second between requests
+                                        } catch (e: Exception) {
+                                            Log.e(
+                                                "PlanToWatch",
+                                                "Error fetching details for anime ${anime.mal_id}",
+                                                e
+                                            )
+                                        }
                                     }
+
                                     _animeList.value = animeListWithDetails
                                 }
                             } catch (e: Exception) {
                                 Log.e("PlanToWatch", "Error fetching anime status", e)
+                            } finally {
+                                _isLoading.value = false
                             }
                         }
                     }
                 }
             } catch (e: Exception) {
                 Log.e("PlanToWatch", "Error loading user", e)
+                _isLoading.value = false
             }
         }
     }

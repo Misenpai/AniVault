@@ -12,6 +12,7 @@ import com.example.anivault.data.network.response.AnimeDetails
 import com.example.anivault.data.network.response.AnimeStatusData
 import com.example.anivault.data.network.response.AnimeStatusUpdateData
 import com.example.anivault.data.repository.UserRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class DroppedViewModel(
@@ -32,6 +33,9 @@ class DroppedViewModel(
 
     private val _deleteResult = MutableLiveData<ResultDropped<String>>()
     val deleteResult: LiveData<ResultDropped<String>> = _deleteResult
+
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
 
     init {
         viewModelScope.launch {
@@ -102,6 +106,7 @@ class DroppedViewModel(
 
     fun loadPlanToWatchAnime() {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 val userLiveData = db.getUserDao().getAnyUser()
 
@@ -112,20 +117,30 @@ class DroppedViewModel(
                                 val response = api.readAnimeStatus(it.id!!, "Dropped")
                                 if (response.isSuccessful) {
                                     val animeList = response.body()?.animes ?: emptyList()
-                                    val animeListWithDetails = animeList.map { anime ->
-                                        val details = jikanApiService.getAnimeDetails(anime.mal_id).data
-                                        AnimeStatusDataWithDetailsDropped(anime, details)
+                                    val animeListWithDetails = mutableListOf<AnimeStatusDataWithDetailsDropped>()
+
+                                    animeList.map {anime ->
+                                        try {
+                                            val details = jikanApiService.getAnimeDetails(anime.mal_id).data
+                                            animeListWithDetails.add(AnimeStatusDataWithDetailsDropped(anime, details))
+                                            delay(1000) // Wait for 1 second between requests
+                                        } catch (e: Exception) {
+                                            Log.e("DroppedViewModel", "Error fetching details for anime ${anime.mal_id}", e)
+                                        }
                                     }
                                     _animeList.value = animeListWithDetails
                                 }
                             } catch (e: Exception) {
                                 Log.e("Dropped", "Error fetching anime status", e)
+                            }finally {
+                                _isLoading.value = false
                             }
                         }
                     }
                 }
             } catch (e: Exception) {
                 Log.e("Dropped", "Error loading user", e)
+                _isLoading.value = false
             }
         }
     }

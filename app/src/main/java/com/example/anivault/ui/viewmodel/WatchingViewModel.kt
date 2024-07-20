@@ -12,6 +12,7 @@
     import com.example.anivault.data.network.response.AnimeStatusData
     import com.example.anivault.data.network.response.AnimeStatusUpdateData
     import com.example.anivault.data.repository.UserRepository
+    import kotlinx.coroutines.delay
     import kotlinx.coroutines.launch
 
     class WatchingViewModel(
@@ -32,6 +33,9 @@
 
         private val _deleteResult = MutableLiveData<ResultWatching<String>>()
         val deleteResult: LiveData<ResultWatching<String>> = _deleteResult
+
+        private val _isLoading = MutableLiveData<Boolean>()
+        val isLoading: LiveData<Boolean> = _isLoading
 
         init {
             viewModelScope.launch {
@@ -103,6 +107,7 @@
 
         fun loadWatchingAnime() {
             viewModelScope.launch {
+                _isLoading.value = true
                 try {
                     val userLiveData = db.getUserDao().getAnyUser()
 
@@ -113,23 +118,36 @@
                                     val response = api.readAnimeStatus(it.id!!, "Currently Watching")
                                     if (response.isSuccessful) {
                                         val animeList = response.body()?.animes ?: emptyList()
-                                        val animeListWithDetails = animeList.map { anime ->
-                                            val details = jikanApiService.getAnimeDetails(anime.mal_id).data
-                                            AnimeStatusDataWithDetailsWatching(anime, details)
+                                        val animeListWithDetails = mutableListOf<AnimeStatusDataWithDetailsWatching>()
+
+                                        animeList.forEach { anime ->
+                                            try {
+                                                val details = jikanApiService.getAnimeDetails(anime.mal_id).data
+                                                animeListWithDetails.add(AnimeStatusDataWithDetailsWatching(anime, details))
+                                                delay(1000)
+                                            } catch (e: Exception) {
+                                                Log.e("WatchingViewModel", "Error fetching details for anime ${anime.mal_id}", e)
+                                            }
                                         }
+
                                         _animeList.value = animeListWithDetails
                                     }
                                 } catch (e: Exception) {
                                     Log.e("WatchingViewModel", "Error fetching anime status", e)
+                                } finally {
+                                    _isLoading.value = false
                                 }
                             }
                         }
                     }
                 } catch (e: Exception) {
                     Log.e("WatchingViewModel", "Error loading user", e)
+                    _isLoading.value = false
                 }
             }
         }
+
+
     }
 
     sealed class ResultWatching<out T> {

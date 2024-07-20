@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -15,6 +16,7 @@ import com.example.anivault.R
 import com.example.anivault.ui.adapters.AnimeStatusAdapterCompleted
 import com.example.anivault.ui.home.animepage.AnimeScreen
 import com.example.anivault.ui.viewmodel.CompletedViewModel
+import com.example.anivault.ui.viewmodel.ResultCompleted
 import com.example.anivault.ui.viewmodelfactory.LibraryViewModelFactory
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
@@ -28,6 +30,7 @@ class Completed : Fragment(), KodeinAware {
     private lateinit var adapter: AnimeStatusAdapterCompleted
     private lateinit var recyclerView: RecyclerView
     private lateinit var totalAnimeText: TextView
+    private lateinit var loadingProgressBar: ProgressBar
 
     private var currentUserId: Int? = null
 
@@ -46,6 +49,7 @@ class Completed : Fragment(), KodeinAware {
 
         recyclerView = view.findViewById(R.id.recycleViewCompletedLibrary)
         totalAnimeText = view.findViewById(R.id.completed_total_anime_text)
+        loadingProgressBar = view.findViewById(R.id.loadingProgressBarCompleted)
 
         viewModel.currentUserId.observe(viewLifecycleOwner) { userId ->
             currentUserId = userId
@@ -77,6 +81,36 @@ class Completed : Fragment(), KodeinAware {
 
 
         viewModel.loadPlanToWatchAnime()
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            if (isLoading) {
+                // Show loading indicator
+                loadingProgressBar.visibility = View.VISIBLE
+            } else {
+                // Hide loading indicator
+                loadingProgressBar.visibility = View.GONE
+            }
+        }
+        viewModel.updateResult.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is ResultCompleted.Success -> {
+                    Toast.makeText(context, result.data, Toast.LENGTH_SHORT).show()
+                }
+                is ResultCompleted.Error -> {
+                    Toast.makeText(context, "Error: ${result.exception.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        viewModel.deleteResult.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is ResultCompleted.Success -> {
+                    Toast.makeText(context, result.data, Toast.LENGTH_SHORT).show()
+                }
+                is ResultCompleted.Error -> {
+                    Toast.makeText(context, "Error: ${result.exception.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
     }
 
     private fun setupRecyclerView() {
