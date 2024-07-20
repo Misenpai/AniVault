@@ -120,12 +120,10 @@
             app:layout_constraintStart_toStartOf="parent"
             app:strokeColor="@color/violet"
             app:strokeWidth="1.5dp" />
-        <ProgressBar
+        <com.example.anivault.utils.RevolvingProgressBar
             android:id="@+id/progress_bar"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:progressBackgroundTint="@color/white"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

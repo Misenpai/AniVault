@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -18,6 +17,7 @@ import com.example.anivault.ui.home.animepage.AnimeScreen
 import com.example.anivault.ui.viewmodel.ResultWatching
 import com.example.anivault.ui.viewmodel.WatchingViewModel
 import com.example.anivault.ui.viewmodelfactory.LibraryViewModelFactory
+import com.example.anivault.utils.RevolvingProgressBar
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
@@ -30,7 +30,7 @@ class Watching : Fragment(), KodeinAware {
     private lateinit var adapter: AnimeStatusAdapterWatching
     private lateinit var recyclerView: RecyclerView
     private lateinit var totalAnimeText: TextView
-    private lateinit var loadingProgressBar: ProgressBar
+    private lateinit var loadingProgressBar: RevolvingProgressBar
 
     private var currentUserId: Int? = null
 

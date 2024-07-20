@@ -16,6 +16,9 @@ class AnimeArchiveThatSeason(private val repository: AnimeRepository) : ViewMode
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
 
     private val allAnimeArchiveThatSeason = mutableListOf<Anime>()
 
@@ -27,13 +30,16 @@ class AnimeArchiveThatSeason(private val repository: AnimeRepository) : ViewMode
 
     fun fetchPreviousSeasonAnime(year: Int, season: String) {
         viewModelScope.launch {
+            _isLoading.value = true
             repository.getAnimeArchive(year.toString(),season)
                 .catch { e ->
                     _errorMessage.value = e.message
+                    _isLoading.value = false
                 }
                 .collect { pageAnimeList ->
                     allAnimeArchiveThatSeason.addAll(pageAnimeList)
                     _animeArchiveThatSeason.value = allAnimeArchiveThatSeason.toList()
+                    _isLoading.value = false
                 }
         }
     }

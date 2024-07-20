@@ -15,6 +15,9 @@ class AnimeViewModelPreviousSeason(private val repository: AnimeRepository) : Vi
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
 
     private val allAnimePreviousSeason = mutableListOf<Anime>()
 
@@ -25,13 +28,16 @@ class AnimeViewModelPreviousSeason(private val repository: AnimeRepository) : Vi
 
     private fun fetchPreviousSeasonAnime() {
         viewModelScope.launch {
+            _isLoading.value = true
             repository.getAnimeListPreviousSeason()
                 .catch { e ->
                     _errorMessage.value = e.message
+                    _isLoading.value = false
                 }
                 .collect { pageAnimeList ->
                     allAnimePreviousSeason.addAll(pageAnimeList)
                     _animeListPreviousSeason.value = allAnimePreviousSeason.toList()
+                    _isLoading.value = false
                 }
         }
     }

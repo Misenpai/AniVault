@@ -2,7 +2,7 @@ package com.example.anivault.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.ProgressBar
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -12,8 +12,7 @@ import com.example.anivault.R
 import com.example.anivault.data.db.Entities.User
 import com.example.anivault.databinding.ActivitySignupBinding
 import com.example.anivault.ui.home.MainActivity
-import com.example.anivault.utils.hide
-import com.example.anivault.utils.show
+import com.example.anivault.utils.RevolvingProgressBar
 import com.example.anivault.utils.toast
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.kodein
@@ -21,7 +20,7 @@ import org.kodein.di.generic.instance
 
 class Signup : AppCompatActivity(),AuthListener,KodeinAware {
     private lateinit var binding: ActivitySignupBinding
-    private lateinit var progressBar: ProgressBar
+    private lateinit var progressBar: RevolvingProgressBar
     override val kodein by kodein()
     private val factory : AuthViewModelFactory by instance()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,20 +42,28 @@ class Signup : AppCompatActivity(),AuthListener,KodeinAware {
         })
     }
 
+    private fun startProgressAnimation() {
+        binding.progressBar.visibility = View.VISIBLE
+    }
+
+    private fun stopProgressAnimation() {
+        binding.progressBar.visibility = View.INVISIBLE
+    }
+
 
     override fun onStarted() {
-        progressBar.show()
+        startProgressAnimation()
         toast("Signup Started")
     }
 
     override fun onSuccess(user: User) {
-        progressBar.hide()
+        stopProgressAnimation()
         toast("${user.name} is Signed up")
         (binding.viewmodel)?.checkStoredUsers()
     }
 
     override fun onFailure(message: String) {
-        progressBar.hide()
+        stopProgressAnimation()
         toast(message)
     }
 }

@@ -11,4 +11,11 @@
         android:id="@+id/recycleViewArchive"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <com.example.anivault.utils.RevolvingProgressBar
+        android:id="@+id/progressBarArchive"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:visibility="gone"/>
 </FrameLayout>

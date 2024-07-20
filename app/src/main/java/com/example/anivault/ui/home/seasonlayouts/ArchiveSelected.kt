@@ -15,6 +15,7 @@ import com.example.anivault.R
 import com.example.anivault.ui.adapters.AnimeAdapter
 import com.example.anivault.ui.home.animepage.AnimeScreen
 import com.example.anivault.ui.viewmodel.AnimeArchiveThatSeason
+import com.example.anivault.utils.RevolvingProgressBar
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
@@ -25,6 +26,7 @@ class ArchiveSelected : Fragment(), KodeinAware {
     private lateinit var animeAdapter: AnimeAdapter
     private lateinit var viewModel: AnimeArchiveThatSeason
     private val viewModelFactory: AnimeViewModelFactory by instance()
+    private lateinit var progressBar: RevolvingProgressBar
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,6 +38,7 @@ class ArchiveSelected : Fragment(), KodeinAware {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView: RecyclerView = view.findViewById(R.id.recycleViewArchiveAnime)
+        progressBar = view.findViewById(R.id.progressBarArchiveSelected)
         recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
 
         animeAdapter = AnimeAdapter { anime ->
@@ -46,6 +49,10 @@ class ArchiveSelected : Fragment(), KodeinAware {
         recyclerView.adapter = animeAdapter
 
         viewModel = ViewModelProvider(this, viewModelFactory).get(AnimeArchiveThatSeason::class.java)
+
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        }
 
         viewModel.animeArchiveThatSeason.observe(viewLifecycleOwner) { animeList ->
             animeAdapter.submitList(animeList)

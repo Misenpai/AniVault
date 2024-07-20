@@ -17,18 +17,25 @@ class ArchiveViewModel(private val repository: AnimeRepository) : ViewModel() {
     private val _archiveItems = MutableLiveData<List<ArchiveYearItems>>()
     val archiveItems: LiveData<List<ArchiveYearItems>> = _archiveItems
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
     init {
         loadArchiveItems()
     }
 
     private fun loadArchiveItems() {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 val seasons = repository.getSeasons()
+                _isLoading.value = false
                 _archiveItems.value = seasons.map { yearSeason ->
                     ArchiveYearItems(yearSeason.year, yearSeason.seasons)
                 }
+
             } catch (e: Exception) {
+                _isLoading.value = false
                 // Handle error
             }
         }
