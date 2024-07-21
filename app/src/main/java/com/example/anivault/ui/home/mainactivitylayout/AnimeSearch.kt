@@ -8,10 +8,11 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ScrollView
 import android.widget.SearchView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.anivault.R
@@ -20,9 +21,9 @@ import com.example.anivault.ui.adapters.HorizontalAnimeRecommendedAdapter
 import com.example.anivault.ui.home.animepage.AnimeScreen
 import com.example.anivault.ui.home.searchpage.SearchViewPage
 import com.example.anivault.ui.home.seasonlayouts.AnimeViewModelFactory
+import com.example.anivault.ui.viewmodel.AnimeSearchUiState
 import com.example.anivault.ui.viewmodel.SearchAnimeHorizontalViewHolder
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.example.anivault.utils.RevolvingProgressBar
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
@@ -36,10 +37,13 @@ class AnimeSearch : Fragment(), KodeinAware {
     private lateinit var topAiringAdapter: HorizontalAnimeAdapter
     private lateinit var viewModel: SearchAnimeHorizontalViewHolder
     private val viewModelFactory: AnimeViewModelFactory by instance()
+    private lateinit var loadingProgressBar: RevolvingProgressBar
 
     private lateinit var searchView: SearchView
     private lateinit var scrollView: ScrollView
     private lateinit var contentContainer: FrameLayout
+
+    private var isSearchViewPageVisible = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,75 +55,104 @@ class AnimeSearch : Fragment(), KodeinAware {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initViews(view)
+        setupRecyclerViews(view)
+        setupViewModel()
+        observeUiState()
+        setupSearchView()
+
+        viewModel.fetchAllAnimeData()
+    }
+
+    private fun initViews(view: View) {
         searchView = view.findViewById(R.id.searchView)
         scrollView = view.findViewById(R.id.scrollView)
         contentContainer = view.findViewById(R.id.contentContainer)
-
-        setupRecyclerViews(view)
-        setupViewModel()
-        setupSearchView()
+        loadingProgressBar = view.findViewById(R.id.loadingProgressBarSearch)
     }
 
     private fun setupRecyclerViews(view: View) {
-        val recyclerViewTopAnime: RecyclerView = view.findViewById(R.id.recycleViewTopAnime)
-        recyclerViewTopAnime.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        topAnimeAdapter = HorizontalAnimeAdapter { anime ->
-            navigateToAnimeScreen(anime.mal_id)
-        }
-        recyclerViewTopAnime.adapter = topAnimeAdapter
+        topAnimeAdapter = HorizontalAnimeAdapter { anime -> navigateToAnimeScreen(anime.mal_id) }
+        recommendedAnimeAdapter =
+            HorizontalAnimeRecommendedAdapter { anime -> navigateToAnimeScreen(anime.mal_id) }
+        topUpcomingAdapter = HorizontalAnimeAdapter { anime -> navigateToAnimeScreen(anime.mal_id) }
+        topAiringAdapter = HorizontalAnimeAdapter { anime -> navigateToAnimeScreen(anime.mal_id) }
 
-        val recyclerViewRecommendedAnime: RecyclerView = view.findViewById(R.id.recycleviewRecommendation)
-        recyclerViewRecommendedAnime.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        recommendedAnimeAdapter = HorizontalAnimeRecommendedAdapter { anime ->
-            navigateToAnimeScreen(anime.mal_id)
+        view.findViewById<RecyclerView>(R.id.recycleViewTopAnime).apply {
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            adapter = topAnimeAdapter
         }
-        recyclerViewRecommendedAnime.adapter = recommendedAnimeAdapter
 
-        val recyclerViewTopUpcoming: RecyclerView = view.findViewById(R.id.recycleviewTopUpcoming)
-        recyclerViewTopUpcoming.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        topUpcomingAdapter = HorizontalAnimeAdapter { anime ->
-            navigateToAnimeScreen(anime.mal_id)
+        view.findViewById<RecyclerView>(R.id.recycleviewRecommendation).apply {
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            adapter = recommendedAnimeAdapter
         }
-        recyclerViewTopUpcoming.adapter = topUpcomingAdapter
 
-        val recyclerViewTopAiringAnime: RecyclerView = view.findViewById(R.id.recycleviewTopAiring)
-        recyclerViewTopAiringAnime.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        topAiringAdapter = HorizontalAnimeAdapter { anime ->
-            navigateToAnimeScreen(anime.mal_id)
+        view.findViewById<RecyclerView>(R.id.recycleviewTopUpcoming).apply {
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            adapter = topUpcomingAdapter
         }
-        recyclerViewTopAiringAnime.adapter = topAiringAdapter
+
+        view.findViewById<RecyclerView>(R.id.recycleviewTopAiring).apply {
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            adapter = topAiringAdapter
+        }
     }
 
     private fun setupViewModel() {
-        viewModel = ViewModelProvider(this, viewModelFactory).get(SearchAnimeHorizontalViewHolder::class.java)
-        viewModel.topAnimeList.observe(viewLifecycleOwner) { animeList ->
-            topAnimeAdapter.submitList(animeList)
-        }
-        viewModel.recommendedAnimeList.observe(viewLifecycleOwner) { animeList ->
-            recommendedAnimeAdapter.submitList(animeList)
-        }
-        viewModel.topUpcomingAnimeList.observe(viewLifecycleOwner) { animeList ->
-            topUpcomingAdapter.submitList(animeList)
-        }
-        viewModel.topAiringAnimeList.observe(viewLifecycleOwner) { animeList ->
-            topAiringAdapter.submitList(animeList)
-        }
-        fetchAnimeData()
+        viewModel = ViewModelProvider(
+            this,
+            viewModelFactory
+        ).get(SearchAnimeHorizontalViewHolder::class.java)
     }
 
-    private fun fetchAnimeData() {
-        viewModel.fetchTopAnime()
-        viewLifecycleOwner.lifecycleScope.launch {
-            delay(500)
-            viewModel.fetchRecommendedAnime()
-            delay(500)
-            viewModel.fetchTopUpcomingAnime()
-            delay(500)
-            viewModel.fetchTopAiringAnime()
+    private fun observeUiState() {
+        viewModel.uiState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is AnimeSearchUiState.Loading -> showLoading()
+                is AnimeSearchUiState.Success -> showContent(state)
+                is AnimeSearchUiState.Error -> showError(state.message)
+            }
         }
     }
 
-    private var isSearchViewPageVisible = false
+    private fun showLoading() {
+        loadingProgressBar.visibility = View.VISIBLE
+        scrollView.visibility = View.GONE
+        hideTextViews()
+    }
+
+    private fun showContent(state: AnimeSearchUiState.Success) {
+        loadingProgressBar.visibility = View.GONE
+        scrollView.visibility = View.VISIBLE
+
+        topAiringAdapter.submitList(state.topAiring)
+        topAnimeAdapter.submitList(state.topAnime)
+        recommendedAnimeAdapter.submitList(state.recommended)
+        topUpcomingAdapter.submitList(state.topUpcoming)
+
+        showTextViews()
+    }
+
+    private fun hideTextViews() {
+        view?.findViewById<TextView>(R.id.TopAiring)?.visibility = View.GONE
+        view?.findViewById<TextView>(R.id.TopAnime)?.visibility = View.GONE
+        view?.findViewById<TextView>(R.id.Recommendation)?.visibility = View.GONE
+        view?.findViewById<TextView>(R.id.TopUpcoming)?.visibility = View.GONE
+    }
+
+    private fun showTextViews() {
+        view?.findViewById<TextView>(R.id.TopAiring)?.visibility = View.VISIBLE
+        view?.findViewById<TextView>(R.id.TopAnime)?.visibility = View.VISIBLE
+        view?.findViewById<TextView>(R.id.Recommendation)?.visibility = View.VISIBLE
+        view?.findViewById<TextView>(R.id.TopUpcoming)?.visibility = View.VISIBLE
+    }
+
+
+    private fun showError(message: String) {
+        loadingProgressBar.visibility = View.GONE
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+    }
 
     private fun setupSearchView() {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -148,10 +181,10 @@ class AnimeSearch : Fragment(), KodeinAware {
         }
     }
 
-
     private fun showSearchViewPage(query: String?) {
         if (!isSearchViewPageVisible) {
-            val searchViewPage = if (query != null) SearchViewPage.newInstance(query) else SearchViewPage()
+            val searchViewPage =
+                if (query != null) SearchViewPage.newInstance(query) else SearchViewPage()
             childFragmentManager.beginTransaction()
                 .replace(R.id.contentContainer, searchViewPage)
                 .addToBackStack(null)

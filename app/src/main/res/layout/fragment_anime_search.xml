@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.home.mainactivitylayout.AnimeSearch">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -100,10 +100,10 @@
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@+id/textView9" />
+                                app:layout_constraintTop_toBottomOf="@+id/TopAiring" />
 
                             <TextView
-                                android:id="@+id/textView9"
+                                android:id="@+id/TopAiring"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_horizontal"
@@ -113,6 +113,7 @@
                                 android:textAlignment="center"
                                 android:textColor="@color/white"
                                 android:textSize="20sp"
+                                android:visibility="gone"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
@@ -137,10 +138,10 @@
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@+id/textView10" />
+                                app:layout_constraintTop_toBottomOf="@+id/TopAnime" />
 
                             <TextView
-                                android:id="@+id/textView10"
+                                android:id="@+id/TopAnime"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="15dp"
@@ -148,6 +149,7 @@
                                 android:text="Top Anime"
                                 android:textColor="@color/white"
                                 android:textSize="20sp"
+                                android:visibility="gone"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
@@ -171,10 +173,10 @@
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@+id/textView11" />
+                                app:layout_constraintTop_toBottomOf="@+id/Recommendation" />
 
                             <TextView
-                                android:id="@+id/textView11"
+                                android:id="@+id/Recommendation"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="15dp"
@@ -182,6 +184,7 @@
                                 android:text="Recommendation"
                                 android:textColor="@color/white"
                                 android:textSize="20sp"
+                                android:visibility="gone"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
@@ -191,6 +194,7 @@
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" >
+
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -204,10 +208,10 @@
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@+id/textView13" />
+                                app:layout_constraintTop_toBottomOf="@+id/TopUpcoming" />
 
                             <TextView
-                                android:id="@+id/textView13"
+                                android:id="@+id/TopUpcoming"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="15dp"
@@ -215,6 +219,7 @@
                                 android:text="Top Upcoming"
                                 android:textColor="@color/white"
                                 android:textSize="20sp"
+                                android:visibility="gone"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
@@ -222,6 +227,13 @@
                     </androidx.cardview.widget.CardView>
                 </LinearLayout>
             </ScrollView>
+
+            <com.example.anivault.utils.RevolvingProgressBar
+                android:id="@+id/loadingProgressBarSearch"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:visibility="invisible" />
         </FrameLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
