@@ -25,7 +25,7 @@ class AnimeViewModel(private val repository: AnimeRepository) : ViewModel() {
         fetchCurrentSeasonAnime()
     }
 
-    private fun fetchCurrentSeasonAnime() {
+    fun fetchCurrentSeasonAnime() {
         viewModelScope.launch {
             _isLoading.value = true
             repository.getAnimeListCurrentSeason()

@@ -22,7 +22,7 @@ import retrofit2.http.Path
 interface MyApi {
 
     @FormUrlEncoded
-    @POST("/user/login")
+    @POST("user/login")
     suspend fun userLogin(
         @Field("email") email: String,
         @Field("password") password: String
@@ -30,26 +30,26 @@ interface MyApi {
 
 
     @FormUrlEncoded
-    @POST("/user/signup")
+    @POST("user/signup")
     suspend fun usersignup(
         @Field("name") name: String,
         @Field("email") email:String,
         @Field("password") password:String
     ):Response<AuthResponse>
 
-    @POST("/user/anime/status")
+    @POST("user/anime/status")
     suspend fun insertAnimeStatus(@Body data: AnimeStatusData): Response<MessageResponse>
 
-    @PUT("/user/anime/status")
+    @PUT("user/anime/status")
     suspend fun updateAnimeStatus(@Body data: AnimeStatusUpdateData): Response<MessageResponseUpdate>
 
-    @DELETE("/user/anime/status/{userId}/{malId}")
+    @DELETE("user/anime/status/{userId}/{malId}")
     suspend fun removeAnimeStatus(
         @Path("userId") userId: Int,
         @Path("malId") malId: Int
     ): Response<MessageResponse>
 
-    @GET("/user/anime/status/{userId}/{status}")
+    @GET("user/anime/status/{userId}/{status}")
     suspend fun readAnimeStatus(
         @Path("userId") userId: Int,
         @Path("status") status: String
@@ -67,7 +67,7 @@ interface MyApi {
 
                 return Retrofit.Builder()
                     .client(okkHttpclient)
-                    .baseUrl("https://authorization-q1gn.onrender.com")
+                    .baseUrl("https://w5ixj64och.execute-api.us-east-1.amazonaws.com/anivault/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build()
                     .create(MyApi::class.java)

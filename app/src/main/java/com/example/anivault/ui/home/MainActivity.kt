@@ -11,6 +11,7 @@ import com.example.anivault.ui.home.mainactivitylayout.AnimeSearch
 import com.example.anivault.ui.home.mainactivitylayout.animeseason
 import com.example.anivault.ui.home.mainactivitylayout.library
 import com.example.anivault.ui.home.mainactivitylayout.profile
+import com.example.anivault.ui.home.seasonlayouts.ArchiveSelected
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -58,4 +59,12 @@ class MainActivity : AppCompatActivity() {
         fragmentTransaction.commit()
     }
 
+    override fun onBackPressed() {
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.frame_archive)
+        if (currentFragment is ArchiveSelected) {
+            supportFragmentManager.popBackStack()
+        } else {
+            super.onBackPressed()
+        }
+    }
 }

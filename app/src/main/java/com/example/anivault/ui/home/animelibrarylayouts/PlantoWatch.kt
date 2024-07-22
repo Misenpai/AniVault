@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.anivault.R
 import com.example.anivault.ui.adapters.AnimeStatusAdapter
 import com.example.anivault.ui.home.animepage.AnimeScreen
@@ -31,6 +32,7 @@ class PlantoWatch : Fragment(), KodeinAware {
     private lateinit var recyclerView: RecyclerView
     private lateinit var totalAnimeText: TextView
     private lateinit var loadingProgressBar: RevolvingProgressBar
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     private var currentUserId: Int? = null
 
@@ -50,12 +52,13 @@ class PlantoWatch : Fragment(), KodeinAware {
         recyclerView = view.findViewById(R.id.recycleViewPlantoWatchLibrary)
         totalAnimeText = view.findViewById(R.id.plantowatch_total_anime_text)
         loadingProgressBar = view.findViewById(R.id.loadingProgressBarPlanToWatch)
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayoutPlantoWatch)
 
         viewModel.currentUserId.observe(viewLifecycleOwner) { userId ->
             currentUserId = userId
         }
 
-        adapter = AnimeStatusAdapter (
+        adapter = AnimeStatusAdapter(
             onItemClick = { anime ->
                 val intent = Intent(requireContext(), AnimeScreen::class.java)
                 intent.putExtra("animeId", anime.statusData.mal_id)
@@ -68,7 +71,7 @@ class PlantoWatch : Fragment(), KodeinAware {
                     Toast.makeText(context, "User ID not available", Toast.LENGTH_SHORT).show()
                 }
             },
-            onDeleteClick = { anime ->  // Add this block
+            onDeleteClick = { anime ->
                 viewModel.currentUserId.value?.let { userId ->
                     viewModel.deleteAnimeStatus(anime.statusData.mal_id, userId)
                 } ?: run {
@@ -113,6 +116,11 @@ class PlantoWatch : Fragment(), KodeinAware {
                 }
             }
         }
+
+        swipeRefreshLayout.setOnRefreshListener {
+            viewModel.loadPlanToWatchAnime()
+            swipeRefreshLayout.isRefreshing = false  // Immediately hide the refresh animation
+        }
     }
 
     private fun setupRecyclerView() {
@@ -129,7 +137,7 @@ class PlantoWatch : Fragment(), KodeinAware {
                     Toast.makeText(context, "User ID not available", Toast.LENGTH_SHORT).show()
                 }
             },
-            onDeleteClick = { anime ->  // Add this block
+            onDeleteClick = { anime ->
                 viewModel.currentUserId.value?.let { userId ->
                     viewModel.deleteAnimeStatus(anime.statusData.mal_id, userId)
                 } ?: run {

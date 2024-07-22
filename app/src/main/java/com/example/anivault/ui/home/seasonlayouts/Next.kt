@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.anivault.R
 import com.example.anivault.ui.adapters.AnimeAdapter
 import com.example.anivault.ui.home.animepage.AnimeScreen
@@ -27,6 +28,7 @@ class Next : Fragment(),KodeinAware {
     private lateinit var viewModel: AnimeViewModelNextAnime
     private val viewModelFactory: AnimeViewModelFactory by instance()
     private lateinit var progressBar: RevolvingProgressBar
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
 
     override fun onCreateView(
@@ -40,6 +42,7 @@ class Next : Fragment(),KodeinAware {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView: RecyclerView = view.findViewById(R.id.recycleViewNextSeason)
         progressBar = view.findViewById(R.id.progressBarNext)
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayoutNext)
 
         recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
 
@@ -64,6 +67,11 @@ class Next : Fragment(),KodeinAware {
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             }
         })
+
+        swipeRefreshLayout.setOnRefreshListener {
+            viewModel.fetchNextSeasonAnime()
+            swipeRefreshLayout.isRefreshing = false  // Immediately hide the refresh animation
+        }
     }
 
 }

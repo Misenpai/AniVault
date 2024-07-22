@@ -26,7 +26,7 @@ class AnimeViewModelPreviousSeason(private val repository: AnimeRepository) : Vi
         fetchPreviousSeasonAnime()
     }
 
-    private fun fetchPreviousSeasonAnime() {
+     fun fetchPreviousSeasonAnime() {
         viewModelScope.launch {
             _isLoading.value = true
             repository.getAnimeListPreviousSeason()

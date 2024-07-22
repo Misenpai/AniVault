@@ -7,11 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.anivault.R
 import com.example.anivault.data.`object`.SharedViewModel
 import com.example.anivault.ui.adapters.AnimeAdapter
@@ -30,6 +32,7 @@ class ArchiveSelected : Fragment(), KodeinAware {
     private val viewModelFactory: AnimeViewModelFactory by instance()
     private lateinit var progressBar: RevolvingProgressBar
     private lateinit var archiveYearText: TextView
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,6 +46,7 @@ class ArchiveSelected : Fragment(), KodeinAware {
         val recyclerView: RecyclerView = view.findViewById(R.id.recycleViewArchiveAnime)
         archiveYearText = view.findViewById(R.id.archive_year_text)
         progressBar = view.findViewById(R.id.progressBarArchiveSelected)
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayoutArchiveSelected)
         recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
 
         animeAdapter = AnimeAdapter { anime ->
@@ -61,6 +65,7 @@ class ArchiveSelected : Fragment(), KodeinAware {
         viewModel.animeArchiveThatSeason.observe(viewLifecycleOwner) { animeList ->
             animeAdapter.submitList(animeList)
         }
+
         viewModel.errorMessage.observe(viewLifecycleOwner, Observer { errorMessage ->
             errorMessage?.let {
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -69,6 +74,21 @@ class ArchiveSelected : Fragment(), KodeinAware {
 
         SharedViewModel.selectedSeason.observe(viewLifecycleOwner) { (year, season) ->
             archiveYearText.text = "$year $season"
+            viewModel.fetchPreviousSeasonAnime(year, season)
         }
+
+        swipeRefreshLayout.setOnRefreshListener {
+            SharedViewModel.selectedSeason.value?.let { (year, season) ->
+                viewModel.fetchPreviousSeasonAnime(year, season)
+            }
+            swipeRefreshLayout.isRefreshing = false
+        }
+
+        // Handle back press
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                parentFragmentManager.popBackStack()
+            }
+        })
     }
 }

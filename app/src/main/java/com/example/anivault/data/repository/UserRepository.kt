@@ -79,4 +79,9 @@ class UserRepository(
     suspend fun readAnimeStatus(userId: Int, status: String): AnimeStatusListResponse {
         return apiRequest { api.readAnimeStatus(userId, status) }
     }
+
+    suspend fun clearAllUserData() {
+        userDao.deleteAllUsers()
+        // Clear any other related data if necessary
+    }
 }

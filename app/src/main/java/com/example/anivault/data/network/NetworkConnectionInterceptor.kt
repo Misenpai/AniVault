@@ -34,5 +34,4 @@ class NetworkConnectionInterceptor(
             return it != null && it.isConnected
         }
     }
-
 }

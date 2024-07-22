@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.anivault.R
 import com.example.anivault.ui.adapters.AnimeStatusAdapterDropped
 import com.example.anivault.ui.home.animepage.AnimeScreen
@@ -31,6 +32,7 @@ class Dropped : Fragment(), KodeinAware {
     private lateinit var recyclerView: RecyclerView
     private lateinit var totalAnimeText: TextView
     private lateinit var loadingProgressBar: RevolvingProgressBar
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     private var currentUserId: Int? = null
 
@@ -50,6 +52,7 @@ class Dropped : Fragment(), KodeinAware {
         recyclerView = view.findViewById(R.id.recycleViewDroppedLibrary)
         totalAnimeText = view.findViewById(R.id.dropped_total_anime_text)
         loadingProgressBar = view.findViewById(R.id.loadingProgressBarDropped)
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayoutDropped)
 
         viewModel.currentUserId.observe(viewLifecycleOwner) { userId ->
             currentUserId = userId
@@ -68,7 +71,7 @@ class Dropped : Fragment(), KodeinAware {
                     Toast.makeText(context, "User ID not available", Toast.LENGTH_SHORT).show()
                 }
             },
-            onDeleteClick = { anime ->  // Add this block
+            onDeleteClick = { anime ->
                 viewModel.currentUserId.value?.let { userId ->
                     viewModel.deleteAnimeStatus(anime.statusData.mal_id, userId)
                 } ?: run {
@@ -78,7 +81,6 @@ class Dropped : Fragment(), KodeinAware {
         )
         setupRecyclerView()
         observeViewModel()
-
 
         viewModel.loadPlanToWatchAnime()
 
@@ -113,6 +115,11 @@ class Dropped : Fragment(), KodeinAware {
                 }
             }
         }
+
+        swipeRefreshLayout.setOnRefreshListener {
+            viewModel.loadPlanToWatchAnime()
+            swipeRefreshLayout.isRefreshing = false  // Immediately hide the refresh animation
+        }
     }
 
     private fun setupRecyclerView() {
@@ -129,7 +136,7 @@ class Dropped : Fragment(), KodeinAware {
                     Toast.makeText(context, "User ID not available", Toast.LENGTH_SHORT).show()
                 }
             },
-            onDeleteClick = { anime ->  // Add this block
+            onDeleteClick = { anime ->
                 viewModel.currentUserId.value?.let { userId ->
                     viewModel.deleteAnimeStatus(anime.statusData.mal_id, userId)
                 } ?: run {

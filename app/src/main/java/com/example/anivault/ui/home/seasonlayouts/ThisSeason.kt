@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.anivault.R
 import com.example.anivault.ui.adapters.AnimeAdapter
 import com.example.anivault.ui.home.animepage.AnimeScreen
@@ -27,6 +28,8 @@ class ThisSeason : Fragment(), KodeinAware {
     private lateinit var viewModel: AnimeViewModel
     private val viewModelFactory: AnimeViewModelFactory by instance()
     private lateinit var progressBar: RevolvingProgressBar
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -39,6 +42,7 @@ class ThisSeason : Fragment(), KodeinAware {
 
         val recyclerView: RecyclerView = view.findViewById(R.id.recycleViewThisSeason)
         progressBar = view.findViewById(R.id.progressBarThisSeason)
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayoutThisSeason)
 
         recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
 
@@ -58,10 +62,16 @@ class ThisSeason : Fragment(), KodeinAware {
         viewModel.animeListThisSeason.observe(viewLifecycleOwner) { animeList ->
             animeAdapter.submitList(animeList)
         }
+
         viewModel.errorMessage.observe(viewLifecycleOwner, Observer { errorMessage ->
             errorMessage?.let {
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             }
         })
+
+        swipeRefreshLayout.setOnRefreshListener {
+            viewModel.fetchCurrentSeasonAnime()
+            swipeRefreshLayout.isRefreshing = false  // Immediately hide the refresh animation
+        }
     }
 }

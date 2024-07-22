@@ -30,9 +30,11 @@
         <item name="android:textColor">@android:color/white</item>
         <item name="android:editTextColor">@android:color/white</item>
         <item name="android:textColorHint">@android:color/white</item>
-        <item name="colorControlNormal">@android:color/white</item>
+        <item name="colorControlNormal">@android:color/holo_purple</item>
         <item name="searchViewStyle">@style/Widget.AppCompat.SearchView</item>
+        <item name="android:background">@drawable/search_view_bg</item>
     </style>
+
 
     <style name="Widget.App.Button.OutlinedButton.IconOnly" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="android:minWidth">0dp</item>
@@ -60,6 +62,10 @@
     <style name="CustomTabText" parent="TextAppearance.Design.Tab">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/white</item> <!-- Customize as needed -->
+    </style>
+
+    <style name="CustomThinHorizontalProgressBar" parent="android:Widget.ProgressBar.Horizontal">
+        <item name="android:progressDrawable">@drawable/custom_progress_bar</item>
     </style>
 
 </resources>

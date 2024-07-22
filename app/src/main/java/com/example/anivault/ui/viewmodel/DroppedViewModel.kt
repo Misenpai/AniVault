@@ -57,7 +57,7 @@ class DroppedViewModel(
                 if (currentEpisodes < totalEpisodes) {
                     val updatedEpisodes = currentEpisodes + 1
                     val updateData = AnimeStatusUpdateData(
-                        status = "Currently Watching",
+                        status = "Watching",
                         mal_id = anime.statusData.mal_id,
                         user_id = userId,
                         total_watched_episodes = updatedEpisodes

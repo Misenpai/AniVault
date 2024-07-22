@@ -39,7 +39,7 @@ class AuthViewModel(
                     checkStoredUsers()
                     return@launch
                 }
-                authListener?.onFailure("Failed to login")
+                authListener?.onFailure("Invalid Email or Password")
             } catch (e: ApiException) {
                 authListener?.onFailure(e.message!!)
             } catch (e: NoInternetException) {
@@ -84,6 +84,12 @@ class AuthViewModel(
                     Log.d("StoredUser", "ID: ${user.id}, Name: ${user.name}, Email: ${user.email}")
                 }
             }
+        }
+    }
+
+    fun clearUserData() {
+        viewModelScope.launch {
+            repository.clearAllUserData()
         }
     }
 }

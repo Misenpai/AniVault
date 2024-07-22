@@ -56,7 +56,7 @@
 
                     if (currentEpisodes < totalEpisodes) {
                         val updatedEpisodes = currentEpisodes + 1
-                        val newStatus = if (updatedEpisodes == totalEpisodes) "Completed" else "Currently Watching"
+                        val newStatus = if (updatedEpisodes == totalEpisodes) "Completed" else "Watching"
                         val updateData = AnimeStatusUpdateData(
                             status = newStatus,
                             mal_id = anime.statusData.mal_id,
@@ -115,7 +115,7 @@
                         user?.let {
                             viewModelScope.launch {
                                 try {
-                                    val response = api.readAnimeStatus(it.id!!, "Currently Watching")
+                                    val response = api.readAnimeStatus(it.id!!, "Watching")
                                     if (response.isSuccessful) {
                                         val animeList = response.body()?.animes ?: emptyList()
                                         val animeListWithDetails = mutableListOf<AnimeStatusDataWithDetailsWatching>()

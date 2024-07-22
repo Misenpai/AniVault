@@ -57,7 +57,7 @@ class PlanToWatchViewModel(
                 if (currentEpisodes < totalEpisodes) {
                     val updatedEpisodes = currentEpisodes + 1
                     val updateData = AnimeStatusUpdateData(
-                        status = "Currently Watching",
+                        status = "Watching",
                         mal_id = anime.statusData.mal_id,
                         user_id = userId,
                         total_watched_episodes = updatedEpisodes
@@ -116,7 +116,7 @@ class PlanToWatchViewModel(
                     user?.let {
                         viewModelScope.launch {
                             try {
-                                val response = api.readAnimeStatus(it.id!!, "Plan to Watch")
+                                val response = api.readAnimeStatus(it.id!!, "PlantoWatch")
                                 if (response.isSuccessful) {
                                     val animeList = response.body()?.animes ?: emptyList()
                                     val animeListWithDetails =

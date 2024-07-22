@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.anivault.R
 import com.example.anivault.ui.adapters.AnimeStatusAdapterCompleted
 import com.example.anivault.ui.home.animepage.AnimeScreen
@@ -31,6 +32,7 @@ class Completed : Fragment(), KodeinAware {
     private lateinit var recyclerView: RecyclerView
     private lateinit var totalAnimeText: TextView
     private lateinit var loadingProgressBar: RevolvingProgressBar
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     private var currentUserId: Int? = null
 
@@ -50,6 +52,7 @@ class Completed : Fragment(), KodeinAware {
         recyclerView = view.findViewById(R.id.recycleViewCompletedLibrary)
         totalAnimeText = view.findViewById(R.id.completed_total_anime_text)
         loadingProgressBar = view.findViewById(R.id.loadingProgressBarCompleted)
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayoutCompleted)
 
         viewModel.currentUserId.observe(viewLifecycleOwner) { userId ->
             currentUserId = userId
@@ -68,7 +71,7 @@ class Completed : Fragment(), KodeinAware {
                     Toast.makeText(context, "User ID not available", Toast.LENGTH_SHORT).show()
                 }
             },
-            onDeleteClick = { anime ->  // Add this block
+            onDeleteClick = { anime ->
                 viewModel.currentUserId.value?.let { userId ->
                     viewModel.deleteAnimeStatus(anime.statusData.mal_id, userId)
                 } ?: run {
@@ -79,8 +82,9 @@ class Completed : Fragment(), KodeinAware {
         setupRecyclerView()
         observeViewModel()
 
-
+        // Load the completed anime list initially
         viewModel.loadPlanToWatchAnime()
+
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             if (isLoading) {
                 // Show loading indicator
@@ -90,6 +94,7 @@ class Completed : Fragment(), KodeinAware {
                 loadingProgressBar.visibility = View.GONE
             }
         }
+
         viewModel.updateResult.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is ResultCompleted.Success -> {
@@ -111,6 +116,11 @@ class Completed : Fragment(), KodeinAware {
                 }
             }
         }
+
+        swipeRefreshLayout.setOnRefreshListener {
+            viewModel.loadPlanToWatchAnime()
+            swipeRefreshLayout.isRefreshing = false  // Immediately hide the refresh animation
+        }
     }
 
     private fun setupRecyclerView() {
@@ -127,7 +137,7 @@ class Completed : Fragment(), KodeinAware {
                     Toast.makeText(context, "User ID not available", Toast.LENGTH_SHORT).show()
                 }
             },
-            onDeleteClick = { anime ->  // Add this block
+            onDeleteClick = { anime ->
                 viewModel.currentUserId.value?.let { userId ->
                     viewModel.deleteAnimeStatus(anime.statusData.mal_id, userId)
                 } ?: run {

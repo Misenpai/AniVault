@@ -10,6 +10,7 @@ import android.widget.ScrollView
 import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
@@ -62,6 +63,18 @@ class AnimeSearch : Fragment(), KodeinAware {
         setupSearchView()
 
         viewModel.fetchAllAnimeData()
+
+        // Handle back press
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (isSearchViewPageVisible) {
+                    returnToAnimeSearch()
+                } else {
+                    isEnabled = false
+                    requireActivity().onBackPressed()
+                }
+            }
+        })
     }
 
     private fun initViews(view: View) {
@@ -147,7 +160,6 @@ class AnimeSearch : Fragment(), KodeinAware {
         view?.findViewById<TextView>(R.id.Recommendation)?.visibility = View.VISIBLE
         view?.findViewById<TextView>(R.id.TopUpcoming)?.visibility = View.VISIBLE
     }
-
 
     private fun showError(message: String) {
         loadingProgressBar.visibility = View.GONE

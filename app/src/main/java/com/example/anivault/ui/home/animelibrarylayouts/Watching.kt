@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.anivault.R
 import com.example.anivault.ui.adapters.AnimeStatusAdapterWatching
 import com.example.anivault.ui.home.animepage.AnimeScreen
@@ -31,6 +32,7 @@ class Watching : Fragment(), KodeinAware {
     private lateinit var recyclerView: RecyclerView
     private lateinit var totalAnimeText: TextView
     private lateinit var loadingProgressBar: RevolvingProgressBar
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     private var currentUserId: Int? = null
 
@@ -50,6 +52,7 @@ class Watching : Fragment(), KodeinAware {
         recyclerView = view.findViewById(R.id.recycleViewWatchingLibrary)
         totalAnimeText = view.findViewById(R.id.watching_total_anime_text)
         loadingProgressBar = view.findViewById(R.id.loadingProgressBarWatching)
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayoutWatching)
 
         viewModel.currentUserId.observe(viewLifecycleOwner) { userId ->
             currentUserId = userId
@@ -68,7 +71,7 @@ class Watching : Fragment(), KodeinAware {
                     Toast.makeText(context, "User ID not available", Toast.LENGTH_SHORT).show()
                 }
             },
-            onDeleteClick = { anime ->  // Add this block
+            onDeleteClick = { anime ->
                 viewModel.currentUserId.value?.let { userId ->
                     viewModel.deleteAnimeStatus(anime.statusData.mal_id, userId)
                 } ?: run {
@@ -112,6 +115,11 @@ class Watching : Fragment(), KodeinAware {
                     Toast.makeText(context, "Error: ${result.exception.message}", Toast.LENGTH_LONG).show()
                 }
             }
+        }
+
+        swipeRefreshLayout.setOnRefreshListener {
+            viewModel.loadWatchingAnime()
+            swipeRefreshLayout.isRefreshing = false  // Immediately hide the refresh animation
         }
     }
 

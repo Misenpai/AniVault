@@ -3,6 +3,7 @@ package com.example.anivault.ui.home
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -53,7 +54,6 @@ class AddingAnimeDatabase : AppCompatActivity() {
         val factory = AddingAnimeDatabaseViewModelFactory(userRepository)
         viewModel = ViewModelProvider(this, factory).get(AddingAnimeDatabaseViewModel::class.java)
 
-
         val malId = intent.getIntExtra("mal_id", 0)
         val animeTitle = intent.getStringExtra("anime_title") ?: ""
         val status = intent.getStringExtra("status") ?: ""
@@ -68,6 +68,11 @@ class AddingAnimeDatabase : AppCompatActivity() {
         setupSaveButton()
         observeCurrentUser()
         observeSaveResult()
+
+        // Set up the back button
+        findViewById<ImageView>(R.id.imageView3).setOnClickListener {
+            onBackPressed()
+        }
     }
 
     private fun setupButtons() {
@@ -135,7 +140,6 @@ class AddingAnimeDatabase : AppCompatActivity() {
         })
     }
 
-
     private fun updateSelectedNumber() {
         val centerView = snapHelper.findSnapView(recyclerView.layoutManager)
         val centerPosition = centerView?.let { recyclerView.layoutManager?.getPosition(it) } ?: -1
@@ -186,11 +190,11 @@ class AddingAnimeDatabase : AppCompatActivity() {
 
     private fun getSelectedStatus(): String {
         return when {
-            btnWatching.isSelected -> "Currently Watching"
+            btnWatching.isSelected -> "Watching"
             btnCompleted.isSelected -> "Completed"
-            btnPlanToWatch.isSelected -> "Plan to Watch"
+            btnPlanToWatch.isSelected -> "PlantoWatch"
             btnDropped.isSelected -> "Dropped"
-            else -> "Plan to Watch"
+            else -> "PlantoWatch"
         }
     }
 

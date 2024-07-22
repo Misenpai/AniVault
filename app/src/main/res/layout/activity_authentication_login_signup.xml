@@ -46,14 +46,14 @@
             app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
         <Button
-            android:onClick="@{viewmodel::onLoginButtonClick}"
             android:id="@+id/authentication_login"
             android:layout_width="wrap_content"
             android:layout_height="60dp"
             android:layout_marginBottom="45dp"
             android:backgroundTint="@color/white"
-            android:fontFamily="@font/japanbento"
+            android:fontFamily="@font/poppins_bold"
             android:letterSpacing=".16"
+            android:onClick="@{viewmodel::onLoginButtonClick}"
             android:text="LOGIN"
             android:textColor="@color/black"
             android:textSize="20sp"
@@ -65,14 +65,14 @@
             app:strokeWidth="1.5dp" />
 
         <Button
-            android:onClick="@{viewmodel::onSignupButtonClick}"
             android:id="@+id/authentication_signup"
             android:layout_width="wrap_content"
             android:layout_height="60dp"
             android:layout_marginBottom="90dp"
             android:backgroundTint="@color/white"
-            android:fontFamily="@font/japanbento"
+            android:fontFamily="@font/poppins_bold"
             android:letterSpacing=".16"
+            android:onClick="@{viewmodel::onSignupButtonClick}"
             android:text="SIGNUP"
             android:textColor="@color/black"
             android:textSize="20sp"

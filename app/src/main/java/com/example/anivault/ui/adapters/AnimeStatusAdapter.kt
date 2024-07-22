@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -49,14 +50,14 @@ class AnimeStatusAdapter(private val onItemClick: (AnimeStatusDataWithDetails) -
         private val searchYear: TextView = itemView.findViewById(R.id.search_year)
         val modifyButton: ImageView = itemView.findViewById(R.id.modify_anime_count)
         val deleteButton: ImageView = itemView.findViewById(R.id.edit_anime_record)
+        private val progressBar: ProgressBar = itemView.findViewById(R.id.progressBar)
 
         fun bind(item: AnimeStatusDataWithDetails) {
             val anime = item.statusData
             val details = item.details
 
             animeName.text = anime.anime_name
-            watchedEpisodes.text = anime.total_watched_episodes.toString()
-            totalEpisodes.text = anime.total_episodes.toString()
+            updateProgress(anime.total_watched_episodes, anime.total_episodes)
 
             Glide.with(itemView.context)
                 .load(details.images.jpg.image_url)
@@ -65,6 +66,12 @@ class AnimeStatusAdapter(private val onItemClick: (AnimeStatusDataWithDetails) -
             searchType.text = details.type
             searchSeason.text = details.season
             searchYear.text = details.year.toString()
+        }
+        private fun updateProgress(watched: Int, total: Int) {
+            progressBar.max = total
+            progressBar.progress = watched
+            watchedEpisodes.text = watched.toString()
+            totalEpisodes.text = total.toString()
         }
     }
 }

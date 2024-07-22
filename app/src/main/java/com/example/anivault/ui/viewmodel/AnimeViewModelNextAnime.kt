@@ -25,7 +25,7 @@ class AnimeViewModelNextAnime(private val repository: AnimeRepository) : ViewMod
         fetchNextSeasonAnime()
     }
 
-    private fun fetchNextSeasonAnime() {
+    fun fetchNextSeasonAnime() {
         viewModelScope.launch {
             _isLoading.value = true
             repository.getAnimeListNextSeason()

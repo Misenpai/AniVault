@@ -2,14 +2,15 @@ package com.example.anivault.ui.home.animepage
 
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
+import android.webkit.WebView
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.VideoView
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.example.anivault.R
 import com.example.anivault.data.network.response.AnimeDetails
@@ -18,22 +19,31 @@ import com.example.anivault.ui.viewmodel.AnimeDetailsViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class AnimeScreen : AppCompatActivity() {
-    private lateinit var viewModel: AnimeDetailsViewModel
+
+    private val viewModel: AnimeDetailsViewModel by viewModels()
+    private lateinit var webView: WebView
+    private var videoId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_anime_screen)
 
+
         val animeId = intent.getIntExtra("animeId", 0)
-        viewModel = ViewModelProvider(this).get(AnimeDetailsViewModel::class.java)
         viewModel.fetchAnimeDetails(animeId)
 
         observeAnimeDetails()
+
+        // Set up the back button
+        findViewById<ImageView>(R.id.imageView3).setOnClickListener {
+            onBackPressed()
+        }
 
         findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener {
             openAddingAnimeDatabase()
         }
     }
+
 
     private fun openAddingAnimeDatabase() {
         viewModel.animeDetails.value?.let { animeDetails ->
@@ -48,9 +58,17 @@ class AnimeScreen : AppCompatActivity() {
     }
 
     private fun observeAnimeDetails() {
-        viewModel.animeDetails.observe(this) { details ->
-            updateUI(details)
-        }
+        viewModel.animeDetails.observe(this, Observer { details ->
+            details?.let {
+                updateUI(it)
+            } ?: run {
+                showError()
+            }
+        })
+    }
+
+    private fun showError() {
+        Toast.makeText(this, "Failed to fetch anime details", Toast.LENGTH_SHORT).show()
     }
 
     private fun updateUI(details: AnimeDetails) {
@@ -105,11 +123,6 @@ class AnimeScreen : AppCompatActivity() {
             endingLayout.addView(textView)
         }
 
-
-        details.trailer.url?.let { url ->
-            val videoView = findViewById<VideoView>(R.id.animeVideoPlayback)
-            videoView.setVideoURI(Uri.parse(url))
-            videoView.start()
-        }
     }
+
 }
