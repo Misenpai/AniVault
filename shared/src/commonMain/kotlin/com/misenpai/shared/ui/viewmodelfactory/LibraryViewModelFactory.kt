@@ -1,0 +1,39 @@
+package com.misenpai.shared.ui.viewmodelfactory
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.misenpai.anivault.data.db.AppDatabase
+import com.misenpai.anivault.data.network.JikanApiService
+import com.misenpai.anivault.data.network.MyApi
+import com.misenpai.anivault.data.repository.UserRepository
+import com.misenpai.anivault.ui.viewmodel.CompletedViewModel
+import com.misenpai.anivault.ui.viewmodel.DroppedViewModel
+import com.misenpai.anivault.ui.viewmodel.PlanToWatchViewModel
+import com.misenpai.anivault.ui.viewmodel.WatchingViewModel
+
+class LibraryViewModelFactory(
+    private val api: MyApi,
+    private val db: AppDatabase,
+    private val jikanApiService: JikanApiService,
+    private val repository: UserRepository
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(PlanToWatchViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return PlanToWatchViewModel(api, db, jikanApiService,repository) as T
+        }
+        else if (modelClass.isAssignableFrom(CompletedViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return CompletedViewModel(api, db,jikanApiService,repository) as T
+        }
+        else if (modelClass.isAssignableFrom(DroppedViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return DroppedViewModel(api, db,jikanApiService,repository) as T
+        }
+        else if (modelClass.isAssignableFrom(WatchingViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return WatchingViewModel(api, db,jikanApiService,repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}

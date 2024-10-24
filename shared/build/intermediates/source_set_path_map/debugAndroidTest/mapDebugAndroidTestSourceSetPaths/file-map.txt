@@ -1,0 +1,5 @@
+com.misenpai.shared.test.shared-androidTest-0 C:\Users\Sumit\Projects\Kotlin\Anivault\AniVault\shared\build\generated\res\resValues\androidTest\debug
+com.misenpai.shared.test.shared-mergeDebugAndroidTestResources-1 C:\Users\Sumit\Projects\Kotlin\Anivault\AniVault\shared\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\merged.dir
+com.misenpai.shared.test.shared-mergeDebugAndroidTestResources-2 C:\Users\Sumit\Projects\Kotlin\Anivault\AniVault\shared\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\stripped.dir
+com.misenpai.shared.test.shared-debugAndroidTest-3 C:\Users\Sumit\Projects\Kotlin\Anivault\AniVault\shared\build\intermediates\merged_res\debugAndroidTest\mergeDebugAndroidTestResources
+com.misenpai.shared.test.shared-debug-4 C:\Users\Sumit\Projects\Kotlin\Anivault\AniVault\shared\build\intermediates\packaged_res\debug\packageDebugResources

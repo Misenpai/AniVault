@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+    <data>
+        <variable
+            name="viewmodel"
+            type="com.misenpai.anivault.ui.auth.AuthViewModelGetStarted" />
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout 
+
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        tools:context=".GETSTARTED">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="294dp"
+            android:layout_height="294dp"
+            app:layout_constraintBottom_toTopOf="@+id/textView2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/fan_art_removebg" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="41dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="@string/get_started_welcome"
+            android:textSize="29sp"
+            app:layout_constraintBottom_toTopOf="@+id/textView"
+            app:layout_constraintEnd_toEndOf="@+id/textView"
+            app:layout_constraintStart_toStartOf="@+id/textView" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="275dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="64dp"
+            android:fontFamily="@font/poppins_medium"
+            android:letterSpacing=".16"
+            android:text="@string/get_started_about"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toTopOf="@+id/getstarted"
+            app:layout_constraintEnd_toEndOf="@+id/getstarted"
+            app:layout_constraintStart_toStartOf="@+id/getstarted" />
+
+        <Button
+            android:onClick="@{viewmodel::onGetStartedButtonClick}"
+            android:id="@+id/getstarted"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginBottom="90dp"
+            android:backgroundTint="@color/white"
+            android:fontFamily="@font/poppins_bold"
+            android:letterSpacing=".16"
+            android:text="GET STARTED"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:cornerRadius="17dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:strokeColor="@color/violet"
+            app:strokeWidth="1.5dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -1,0 +1,8 @@
+com.misenpai.shared-pngs-0 C:\Users\Sumit\Projects\Kotlin\Anivault\AniVault\shared\build\generated\res\pngs\release
+com.misenpai.shared-resValues-1 C:\Users\Sumit\Projects\Kotlin\Anivault\AniVault\shared\build\generated\res\resValues\release
+com.misenpai.shared-mergeReleaseResources-2 C:\Users\Sumit\Projects\Kotlin\Anivault\AniVault\shared\build\intermediates\incremental\release\mergeReleaseResources\merged.dir
+com.misenpai.shared-mergeReleaseResources-3 C:\Users\Sumit\Projects\Kotlin\Anivault\AniVault\shared\build\intermediates\incremental\release\mergeReleaseResources\stripped.dir
+com.misenpai.shared-release-4 C:\Users\Sumit\Projects\Kotlin\Anivault\AniVault\shared\build\intermediates\merged_res\release\mergeReleaseResources
+com.misenpai.shared-androidMain-5 C:\Users\Sumit\Projects\Kotlin\Anivault\AniVault\shared\src\androidMain\res
+com.misenpai.shared-main-6 C:\Users\Sumit\Projects\Kotlin\Anivault\AniVault\shared\src\main\res
+com.misenpai.shared-release-7 C:\Users\Sumit\Projects\Kotlin\Anivault\AniVault\shared\src\release\res

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+
+    <data>
+        <variable
+            name="viewmodel"
+            type="com.misenpai.anivault.ui.auth.AuthViewModel" />
+    </data>
+
+    <FrameLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        tools:context=".ui.auth.Login">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:weightSum="1">
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="143dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="62dp"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/logo" />
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="320dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:layout_marginBottom="40dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/japanbento"
+                android:letterSpacing=".32"
+                android:lineSpacingExtra="10dp"
+                android:text="@string/login_welcome"
+                android:textAlignment="textStart"
+                android:textSize="24sp" />
+
+            <EditText
+                android:id="@+id/login_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="40dp"
+                android:layout_weight="1"
+                android:background="@drawable/authentication_field"
+                android:ems="10"
+                android:fontFamily="@font/poppins_medium"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:paddingLeft="18dp"
+                android:text="@={viewmodel.email}"
+                android:textColor="@color/black"
+                android:textColorHint="@color/grey"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/login_password"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="69dp"
+                android:layout_weight="1"
+                android:background="@drawable/authentication_field"
+                android:ems="10"
+                android:fontFamily="@font/poppins_medium"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:paddingLeft="18dp"
+                android:text="@={viewmodel.password}"
+                android:textColor="@color/black"
+                android:textColorHint="@color/grey"
+                android:textSize="20sp" />
+
+            <Button
+                android:id="@+id/login_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_marginBottom="90dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/white"
+                android:fontFamily="@font/poppins_bold"
+                android:letterSpacing=".16"
+                android:onClick="@{viewmodel::onLoginButtonClick}"
+                android:text="LOGIN"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                app:cornerRadius="17dp"
+                app:strokeColor="@color/violet"
+                app:strokeWidth="1.5dp" />
+        </LinearLayout>
+
+        <com.misenpai.anivault.utils.RevolvingProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:visibility="invisible" />
+    </FrameLayout>
+</layout>
